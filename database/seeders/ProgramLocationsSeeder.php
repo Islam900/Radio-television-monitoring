@@ -14,7 +14,7 @@ class ProgramLocationsSeeder extends Seeder
     public function run(): void
     {
         $array = [
-            'Təyin edilmədi',
+            'Təyin edilməyib',
             'Zibakenar',
             'Astara (gln)',
             'Kuh-e Sangar',

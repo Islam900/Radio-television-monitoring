@@ -37,11 +37,20 @@
                                     <button class="btn btn-{{ $user->activity_status==1 ? 'success' : '' }}">{{ $user->activity_status==1 ? 'Aktiv' : 'Məhdudlaşdırılıb' }}</button>
                                 </td>
                                 <td>
-                                    <button class="btn btn-primary ban-user" data-user-id="{{$user->id}}">
+                                    @if($user->activity_status == 0)
+                                        <button class="btn btn-success unban-user" data-user-id="{{$user->id}}">
+                                        <span>
+                                            <i class="nav-icon i-Unlock font-weight-bold"></i>
+                                        </span>
+                                        </button>
+                                    @endif
+                                    @if($user->activity_status == 1)
+                                        <button class="btn btn-danger ban-user" data-user-id="{{$user->id}}">
                                         <span>
                                             <i class="nav-icon i-Lock font-weight-bold"></i>
                                         </span>
-                                    </button>
+                                        </button>
+                                    @endif
                                     <a href="{{ route('system-users.edit', $user->id) }}">
                                         <button class="btn btn-warning">
                                             <span>
@@ -97,12 +106,17 @@
                             }
 
                             const responseData = await response.json();
+                            console.log(responseData);
                             if(responseData.status == 200)
                             {
                                 Swal.fire({
-                                    icon: 'success',
-                                    title: 'Uğurlu',
-                                    text: responseData.message
+                                    title: "Giriş məhdudlaşdırıldı",
+                                    text: responseData.message,
+                                    icon: "success"
+                                }).then((result) => {
+                                    if(result.isConfirmed) {
+                                        window.location.href = responseData.route;
+                                    }
                                 });
                             }
                         } catch (error) {
@@ -111,7 +125,60 @@
                     },
                     allowOutsideClick: () => !Swal.isLoading()
                 })
-            })
+            });
+
+            $('.unban-user').on('click', async function() {
+                let timerInterval;
+                const button = $(this);
+
+                const user_id = button.data('user-id');
+                try {
+                    const response = await fetch("{{ route('system-users.unban-user') }}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                        },
+                        body: JSON.stringify({
+                            user_id: user_id,
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Xəta!');
+                    }
+
+                    const responseData = await response.json();
+                    window.location.href = responseData.route;
+                } catch (error) {
+                    Swal.fire('Xəta!', error.message, 'error');
+                }
+
+                Swal.fire({
+                    title: "Girişi bərpa edilir!",
+                    html: "İstifadəçinin məhdudlaşdırılması aradan qaldırılır.",
+                    timer: 2000,
+                    timerProgressBar: true,
+                    didOpen: () => {
+                        Swal.showLoading();
+                        setTimeout(() => {
+                            const timer = Swal.getPopup().querySelector("b");
+                            if(timer){
+                                timer.textContent = 'Merhaba';
+                                timerInterval = setInterval(() => {
+                                    timer.textContent = 'Merhaba';
+                                }, 100);
+                            }
+                        }, 100);
+                    },
+                    willClose: () => {
+                        clearInterval(timerInterval);
+                    }
+                }).then(async (result) => {
+                    if (result.isDismissed) return;
+                });
+            });
+
         })
 
     </script>

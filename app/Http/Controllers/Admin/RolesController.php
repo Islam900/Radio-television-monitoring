@@ -89,7 +89,7 @@ class RolesController extends Controller
         $role->delete();
 
         return response()->json([
-            'message' => 'Məlumatlar müvəffəqiyyətlə silind',
+            'message' => 'Məlumatlar müvəffəqiyyətlə silindi',
             'route' => route('roles.index'),
             'status' => 200
         ]);

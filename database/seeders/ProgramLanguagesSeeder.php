@@ -19,8 +19,9 @@ class ProgramLanguagesSeeder extends Seeder
             'Fars-Azəri',
             'Rus',
             'Gürcü',
-            'erməni',
-            'Orta Asiya dilləri'
+            'Erməni',
+            'Orta Asiya dilləri',
+            'Təyin edilməyib'
         ];
 
         foreach ($array as $item)

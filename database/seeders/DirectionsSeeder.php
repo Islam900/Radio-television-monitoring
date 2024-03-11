@@ -20,7 +20,8 @@ class DirectionsSeeder extends Seeder
             'İran',
             'Gürcüstan',
             'Ermənistan',
-            'Orta Asiya'
+            'Orta Asiya',
+            'Təyin edilməyib'
         ];
 
         foreach ($array as $item)

@@ -50,7 +50,32 @@ class SystemUsersController extends Controller
     }
     public function ban_user(Request $request)
     {
-        return $request->all();
+        $user = User::find($request->user_id);
+        $user->activity_status = 0;
+        $user->ban_start_date = Carbon::now()->format('Y-m-d');
+        $user->ban_end_date = $request->ban_end_date;
+        $user->save();
+
+        return response()->json([
+            'message' => 'İstifadəçisinin sistemə girişi '. $request->ban_end_date .' tarixinədək məhdudlaşdırıldı.',
+            'route' => route('system-users.index'),
+            'status' => 200
+        ]);
+    }
+
+    public function unban_user(Request $request)
+    {
+        $user = User::find($request->user_id);
+        $user->activity_status = 1;
+        $user->ban_start_date = NULL;
+        $user->ban_end_date = NULL;
+        $user->save();
+
+        return response()->json([
+            'message' => 'İstifadəçisinin sistemə girişi bərpa edildi',
+            'route' => route('system-users.index'),
+            'status' => 200
+        ]);
     }
 
     /**

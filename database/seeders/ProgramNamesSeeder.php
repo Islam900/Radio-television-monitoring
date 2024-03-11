@@ -80,6 +80,7 @@ class ProgramNamesSeeder extends Seeder
             'Radio İveriya',
             'Radio Maestro',
             'Radio Ardaidardo',
+            'Təyin edilməyib'
         ];
 
         foreach ($array as $item)
