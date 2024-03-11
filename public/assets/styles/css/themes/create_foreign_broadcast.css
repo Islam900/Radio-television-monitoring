@@ -2,10 +2,6 @@ body {
     font-family: sans-serif !important;
 }
 
-#formRow{
-
-}
-
 .form-group .select_label {
     color: #70657b !important;
     margin-bottom: 4px !important;
@@ -14,6 +10,14 @@ body {
     font-size: 16px !important;
     font-weight: 400 !important;
     text-transform: none !important;
+}
+
+#local-broadcasts-table td{
+    padding: 8px 18px !important; 
+}
+
+.dataTables_filter{
+    margin-bottom: 18px !important;
 }
 
 .ui{
@@ -116,10 +120,24 @@ body {
     border-radius: 4px;
     padding: 6px 18px;
     position: absolute;
-    bottom: -27px;
-    right: 14px;
+    bottom: 6px;
+    right: 16px;
     color: #FFF;
     cursor: pointer;
+}
+
+.form_block{
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    padding: 24px 0px;
+    border-radius: 6px;
+    width: 100%;
+    margin: 48px auto !important;
+    margin-top: 16px !important;
+}
+
+.form_block > div{
+    /* padding-left: 8px !important; */
+    /* padding-right: 8px !important; */
 }
 
 .ui.input{
