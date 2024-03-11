@@ -18,9 +18,6 @@ class LocalBroadcastController extends Controller
      */
     public function index()
     {
-        $response = \Http::get('https://api.tomorrow.io/v4/timelines?location=40.40,49.86&fields=temperature&timesteps=1h&units=metric&apikey=FbBo7jhFJe6A1SD26OHNjsq57bmX2fBq');
-        dd(json_decode($response->body(), true));
-        dd($_GET['report_number']);
         $reports = Auth::user()->stations->local_broadcasts;
         return view('local-broadcasts.index', compact('reports'));
     }

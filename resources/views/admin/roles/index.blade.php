@@ -26,12 +26,17 @@
                                 <td>{{ $role->name }}</td>
                                 <td>
                                     <a href="{{ route('roles.edit', $role->id) }}">
-                                        <button class="btn btn-warning">
+                                        <button class="btn btn-info">
                                             <span>
                                                 <i class="nav-icon i-Pen-2 font-weight-bold"></i>
                                             </span>
                                         </button>
                                     </a>
+                                    <button class="btn btn-danger delete-role" data-role-id="{{$role->id}}">
+                                        <span>
+                                            <i class="nav-icon i-Folder-Trash font-weight-bold"></i>
+                                        </span>
+                                    </button>
                                 </td>
                             </tr>
                         @endforeach
@@ -41,4 +46,70 @@
             </div>
         </div>
     </div>
+@endsection
+
+@section('js')
+    <script>
+        $(document).ready(function () {
+            $('.delete-role').on('click', function () {
+                const swalWithBootstrapButtons = Swal.mixin({
+                    customClass: {
+                        confirmButton: "btn btn-success",
+                        cancelButton: "btn btn-danger me-2"
+                    },
+                    buttonsStyling: false
+                });
+                swalWithBootstrapButtons.fire({
+                    title: "Silmək istədiyinizdən əminsiniz ?",
+                    text: "Buna bağlı bütün məlumatlar silinəcək !",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: "Sil!",
+                    cancelButtonText: "Ləğv et!",
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        let role_id = $(this).data('role-id');
+                        $.ajax({
+                            url: "/roles/" + role_id,
+                            type:"DELETE",
+                            data: {
+                                "_token":"{{csrf_token()}}",
+                                "role_id": role_id
+                            },
+                            success: function (response) {
+                                if(response.status == 200){
+                                    Swal.fire({
+                                        title: "Məlumatlar silindi",
+                                        text: response.message,
+                                        icon: "success"
+                                    }).then((result) => {
+                                        if(result.isConfirmed) {
+                                            window.location.href = response.route;
+                                        }
+                                    });
+                                }
+                                else
+                                {
+                                    swalWithBootstrapButtons.fire({
+                                        title: "Xəta baş verdi",
+                                        text: "Məlumatlar silinmədi",
+                                        icon: "error"
+                                    });
+                                }
+                            }
+                        })
+                    } else if (
+                        result.dismiss === Swal.DismissReason.cancel
+                    ) {
+                        swalWithBootstrapButtons.fire({
+                            title: "Ləğv etdiniz",
+                            text: "Məlumatlar silinmədi",
+                            icon: "error"
+                        });
+                    }
+                });
+            })
+        })
+    </script>
 @endsection

@@ -27,12 +27,21 @@
                                 <td>{{ $user->id }}</td>
                                 <td>{{ $user->name_surname }}</td>
                                 <td>
-                                    {{$user->position}}
+                                    @if($user->roles->isNotEmpty())
+                                        <strong>{{ $user->roles->first()->name }}</strong>
+                                    @else
+                                        <strong>Vəzifə təyin olunmayıb</strong>
+                                    @endif
                                 </td>
                                 <td>
                                     <button class="btn btn-{{ $user->activity_status==1 ? 'success' : '' }}">{{ $user->activity_status==1 ? 'Aktiv' : 'Məhdudlaşdırılıb' }}</button>
                                 </td>
                                 <td>
+                                    <button class="btn btn-primary ban-user" data-user-id="{{$user->id}}">
+                                        <span>
+                                            <i class="nav-icon i-Lock font-weight-bold"></i>
+                                        </span>
+                                    </button>
                                     <a href="{{ route('system-users.edit', $user->id) }}">
                                         <button class="btn btn-warning">
                                             <span>
@@ -56,32 +65,30 @@
         $(document).ready(function() {
 
             // send to update function
-            $('#change-status-edit').on('click', function() {
+            $('.ban-user').on('click', function() {
                 const button = $(this);
                 Swal.fire({
-                    title: "Zəhmət olmasa düzəlişə göndərilmə səbəbini daxil edin",
-                    input: "text",
+                    title: "Zəhmət olmasa son tarix seçin",
+                    input: "date",
                     inputAttributes: {
                         autocapitalize: "off"
                     },
                     showCancelButton: true,
                     cancelButtonText: "Ləğv edin",
-                    confirmButtonText: "Göndərin",
+                    confirmButtonText: "Təsdiq edin",
                     showLoaderOnConfirm: true,
-                    preConfirm: async (reason) => {
-                        const status_data = button.data('accepted-status');
-                        const report_id = button.data('report-id');
+                    preConfirm: async (ban_end_date) => {
+                        const user_id = button.data('user-id');
                         try {
-                            const response = await fetch("{{ route('dashboard-local-broadcasts.send-to-update') }}", {
+                            const response = await fetch("{{ route('system-users.ban-user') }}", {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json',
                                     'X-CSRF-TOKEN': "{{ csrf_token() }}"
                                 },
                                 body: JSON.stringify({
-                                    report_id: report_id,
-                                    accepted_status: status_data,
-                                    reason: reason
+                                    user_id: user_id,
+                                    ban_end_date: ban_end_date
                                 })
                             });
 
@@ -90,41 +97,20 @@
                             }
 
                             const responseData = await response.json();
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Uğurlu',
-                                text: responseData.message
-                            });
-                            setTimeout(function, milliseconds);
-                            // location.reload();
+                            if(responseData.status == 200)
+                            {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Uğurlu',
+                                    text: responseData.message
+                                });
+                            }
                         } catch (error) {
                             Swal.showValidationMessage(`${error.message}`);
                         }
                     },
                     allowOutsideClick: () => !Swal.isLoading()
                 })
-            })
-
-            //confirm function
-            $('#change-status-confirm   ').on('click', function() {
-                const button = $(this);
-                Swal.fire({
-                    title: "Məlumatların düzgünlüyünü təsdiq edirsiniz ?",
-                    icon: "warning",
-                    showCancelButton: true,
-                    cancelButtonText: "Ləğv edin",
-                    confirmButtonColor: "#4caf50",
-                    cancelButtonColor: "#d33",
-                    confirmButtonText: "Təsdiq edin!"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        Swal.fire({
-                            title: "Deleted!",
-                            text: "Your file has been deleted.",
-                            icon: "success"
-                        });
-                    }
-                });
             })
         })
 

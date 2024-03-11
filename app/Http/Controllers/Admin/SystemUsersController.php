@@ -44,11 +44,13 @@ class SystemUsersController extends Controller
             'position' => Role::find($request->role)->name,
             'activity_status' => 1
         ]);
-
         $role = Role::find($request->role);
         $user->assignRole($role);
-
         return redirect()->route('system-users.index')->with('store_success', 'Məlumatlar daxil edildi');
+    }
+    public function ban_user(Request $request)
+    {
+        return $request->all();
     }
 
     /**

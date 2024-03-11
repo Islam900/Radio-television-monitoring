@@ -35,6 +35,7 @@ class LocalBroadcastsController extends Controller
 
         return response()->json([
             'message' => 'Gündəlik hesabat düzəliş üçün məntəqəyə göndərildi',
+            'route' => route('stations.show', $report->stations->id),
             'status'  => 200
         ]);
     }
