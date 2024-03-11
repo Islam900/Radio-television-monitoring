@@ -106,11 +106,11 @@
                             <span class="text-danger error_message" id="response_qualityError"></span>
                         </div>
                         
-                        <div id="delete_container" class="delete_block">
+                        {{-- <div id="delete_container" class="delete_block">
                             Bloku sil
-                        </div>
+                        </div> --}}
                     </div>
-                    <hr>                   
+                    {{-- <hr>                    --}}
                 </div>
 
                 <div class="col-lg-12">
@@ -155,22 +155,21 @@
         let rowCount = 0;
 
         let fields = [
-            { id: 'frequency_select', name: 'Tezlik', errorId: 'frequencies_idError', errorMessage: 'Zəhmət olmasa tezlik seçin' },
-            { id: 'direction_select', name: 'İstiqamət', errorId: 'directions_idError', errorMessage: 'Zəhmət olmasa istiqamət seçin' },
-            { id: 'program_name_select', name: 'Proqram adı', errorId: 'program_names_idError', errorMessage: 'Zəhmət olmasa proqram adını seçin' },
-            { id: 'program_lang', name: 'Proqram dili', errorId: 'program_langError', errorMessage: 'Zəhmət olmasa proqram dilini seçin' },
-            { id: 'emfs_level', name: 'Elektromaqnit sahə gərginliyinin səviyyəsi', errorId: 'emfs_levelError', errorMessage: 'Zəhmət olmasa EMSG səviyyəsini daxil edin' },
-            { id: 'response_direction', name: 'Kanalın qəbul edildiyi istiqamət', errorId: 'response_directionError', errorMessage: 'Zəhmət olmasa dərəcəni daxil edin' },
-            { id: 'polarization', name: 'Polyarizasiya', errorId: 'polarizationError', errorMessage: 'Zəhmət olmasa polyarizasiya seçin' },
-            { id: 'response_quality', name: 'Qəbulun keyfiyyəti və interferensiya yaratması', errorId: 'response_qualityError', errorMessage: 'Zəhmət olmasa qəbul keyfiyyətini seçin' }
+            { id: 'frequency_select', name: 'Tezlik', errorId: 'frequencies_idError', errorMessage: 'Zəhmət olmasa tezlik seçin', num: 0, },
+            { id: 'direction_select', name: 'İstiqamət', errorId: 'directions_idError', errorMessage: 'Zəhmət olmasa istiqamət seçin', num: 0, },
+            { id: 'program_name_select', name: 'Proqram adı', errorId: 'program_names_idError', errorMessage: 'Zəhmət olmasa proqram adını seçin', num: 0, },
+            { id: 'program_lang', name: 'Proqram dili', errorId: 'program_langError', errorMessage: 'Zəhmət olmasa proqram dilini seçin', num: 0, },
+            { id: 'emfs_level', name: 'Elektromaqnit sahə gərginliyinin səviyyəsi', errorId: 'emfs_levelError', errorMessage: 'Zəhmət olmasa EMSG səviyyəsini daxil edin', num: 0, },
+            { id: 'response_direction', name: 'Kanalın qəbul edildiyi istiqamət', errorId: 'response_directionError', errorMessage: 'Zəhmət olmasa dərəcəni daxil edin', num: 0, },
+            { id: 'polarization', name: 'Polyarizasiya', errorId: 'polarizationError', errorMessage: 'Zəhmət olmasa polyarizasiya seçin', num: 0, },
+            { id: 'response_quality', name: 'Qəbulun keyfiyyəti və interferensiya yaratması', errorId: 'response_qualityError', errorMessage: 'Zəhmət olmasa qəbul keyfiyyətini seçin', num: 0, }
         ];4
 
         addNewBtn.addEventListener('click', function () {
             rowCount++;
             const formsContainer = document.querySelector('.form_inputs_container');
-            // const form_block = document.querySelector('.form_block');
             const defaultForm = document.getElementById('formRow');
-            
+
             const clone = defaultForm.cloneNode(true);
             clone.id += rowCount;
             const inputs = clone.querySelectorAll('input');
@@ -202,13 +201,17 @@
 
             formsContainer.appendChild(clone);
 
-            const hrElement = document.createElement('hr');
-            const deleteContainer = document.createElement('div');
-            deleteContainer.id = `delete_container${rowCount}`;
-            deleteContainer.classList.add('delete_block');
-            deleteContainer.textContent = 'Bloku sil';
-            // formsContainer.appendChild(deleteContainer);
-            formsContainer.appendChild(hrElement);
+            const dynamicForm = document.getElementById(`formRow${rowCount}`);
+            if(rowCount > 0){
+                const deleteContainer = document.createElement('div');
+                deleteContainer.id = `delete_container${rowCount}`;
+                deleteContainer.classList.add('delete_block');
+                deleteContainer.textContent = 'Bloku sil';
+                dynamicForm.appendChild(deleteContainer);
+            };
+
+            document.getElementById(`emfs_level${rowCount}`).disabled = true;
+            document.getElementById(`response_direction${rowCount}`).disabled = true;
 
             $('.ui.create_form_dropdown').dropdown({
                 clearable: true,
@@ -224,11 +227,13 @@
                     id: `${field.id}${rowCount}`,
                     name: `${field.name}${rowCount}`,
                     errorId: `${field.errorId}${rowCount}`,
-                    errorMessage: field.errorMessage
+                    errorMessage: field.errorMessage,
+                    num: rowCount
                 };
             });
 
             fields.push(...newFields);
+            console.log(fields)
         });
 
         $(document).on('click', '[id^="delete_container"]', function(e) {
@@ -236,6 +241,8 @@
             const container = document.querySelector(`#formRow${number}`);
             container.remove();
             rowCount--;
+            fields = fields.filter(field => field.num != number)
+            console.log(fields)
         });
         
     </script>

@@ -3,7 +3,7 @@
     <div class="row mb-4">
         <div class="col-md-12 mb-4">
 
-            <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex justify-content-between align-items-center mb-4">
                 <h3>Yerli hesabatlar</h3>
                 @if($local_broadcast_button_status)
                 <a href="{{route('local-broadcasts.create')}}">
@@ -20,24 +20,26 @@
                 <table id="local-broadcasts-table" class="display table table-striped" style="width:100%">
                     <thead>
                     <tr>
+                        <th style="min-width: 105px;">Sənəd nömrəsi</th>
                         <th>№</th>
                         <th>Tarix</th>
-                        <th>Tezlik (kanal)</th>
-                        <th>Proqramın adı</th>
+                        <th style="min-width: 95px;">Tezlik (kanal)</th>
+                        <th style="min-width: 100px;">Proqramın adı</th>
                         <th>İstiqamət</th>
-                        <th>Proqramın yayımlandığı dil</th>
-                        <th>ESG səviyyəsi</th>
+                        <th style="min-width: 190px;">Proqramın yayımlandığı dil</th>
+                        <th style="min-width: 105px;">ESG səviyyəsi</th>
                         <th>Dərəcə</th>
                         <th>Polyarizasiya</th>
                         <th>Cihazlar</th>
-                        <th>Qəbulun keyfiyyəti</th>
-                        <th>Təsdiq statusu</th>
+                        <th style="min-width: 135px;">Qəbulun keyfiyyəti</th>
+                        <th style="min-width: 105px;">Təsdiq statusu</th>
                         <th>Əməliyyatlar</th>
                     </tr>
                     </thead>
                     <tbody>
                     @foreach($reports as $report)
                         <tr class="font-weight-bold">
+                            <td>{{ $report->report_number }}</td>
                             <td>{{ $report->id }}</td>
                             <td>{{\Carbon\Carbon::parse($report->report_date)->format('d.m.Y')}}</td>
                             <td>{{$report->frequencies->value}}</td>
@@ -97,32 +99,42 @@
 @section('js')
     <script>
         $(document).ready(function () {
-            $('#local-broadcasts-table').DataTable();
+            // $('#local-broadcasts-table').DataTable();
 
-            @if (session('store_success'))
-            const storeSuccess = "{{ session('store_success') }}";
-            const SuccessAlert = Swal.fire({
-                title: "Uğurlu!",
-                text: storeSuccess,
-                icon: "success"
-            })
-            SuccessAlert.fire();
-
-            @php session()->forget('store_success') @endphp
-            @endif
-
-
-            @if (session('store_error'))
-            const storeError = "{{ session('store_error') }}";
-            const ErrorAlert = Swal.fire({
-                title: "Xəta!",
-                text: storeError,
-                icon: "error"
-            })
-            ErrorAlert.fire();
-
-            @php session()->forget('store_error') @endphp
-            @endif
+            $("#local-broadcasts-table").DataTable({
+                // data: true,
+                info: true,
+                paging: true,
+                drawCallback: function(settings) {
+                    if (settings._iDisplayLength >= settings.fnRecordsDisplay()) {
+                        $("#local-broadcasts-table_paginate").hide();
+                        $("#local-broadcasts-table_length").hide();
+                    } else {
+                        $("#local-broadcasts-table_paginate").show();
+                        $("#local-broadcasts-table_length").hide();
+                    }
+                },
+                "pagingType": 'full_numbers',
+                "language": {
+                    "zeroRecords": "Axtarışınıza uyğun nəticə tapılmadı...",
+                    "emptyTable": "İdxala icazə üçün heç bir müraciət yaradılmayıb...",
+                    "paginate": {
+                        "next": ">",
+                        "previous": "<",    
+                        "first": "<<",    
+                        "last": ">>"    
+                    },
+                    "search": "Axtar",
+                    sInfoFiltered: "(ümumi _MAX_ maddədən filtrlənmiş)",
+                    sInfoEmpty: "Göstərilən: 0-0, cəmi 0 (0 səhifə)"
+                },
+                "lengthChange": true,
+                "pageLength": 10,
+                oLanguage: {
+                    sEmptyTable: "Heç bir hesabat əlavə edilməyib...",
+                    sInfo: "Göstərilən: 1-10, cəmi _TOTAL_ (_PAGES_ səhifə)",
+                },
+            });
         })
     </script>
 @endsection
