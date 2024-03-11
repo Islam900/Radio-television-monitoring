@@ -91,7 +91,7 @@
                             <div class="select_label ui sub header ">Qəbulun keyfiyyəti və interferensiya yaratması</div>
     
                             <div class="ui input">
-                                <select id="response_quality" name="response_quality[]"
+                                <select id="response_quality" name="response_quality[]" myUniqueItem="response_quality_local"
                                         class="form-control ui fluid search dropdown create_form_dropdown">
                                     <option value="">Qəbulun keyfiyyəti və interferensiya yaratmasını seçin</option>
                                     <option value="Yaxşı" {{ old('response_quality') == 'Yaxşı' ?  'selected' : '' }}>
@@ -105,12 +105,7 @@
                             </div>
                             <span class="text-danger error_message" id="response_qualityError"></span>
                         </div>
-                        
-                        {{-- <div id="delete_container" class="delete_block">
-                            Bloku sil
-                        </div> --}}
                     </div>
-                    {{-- <hr>                    --}}
                 </div>
 
                 <div class="col-lg-12">
@@ -163,7 +158,7 @@
             { id: 'response_direction', name: 'Kanalın qəbul edildiyi istiqamət', errorId: 'response_directionError', errorMessage: 'Zəhmət olmasa dərəcəni daxil edin', num: 0, },
             { id: 'polarization', name: 'Polyarizasiya', errorId: 'polarizationError', errorMessage: 'Zəhmət olmasa polyarizasiya seçin', num: 0, },
             { id: 'response_quality', name: 'Qəbulun keyfiyyəti və interferensiya yaratması', errorId: 'response_qualityError', errorMessage: 'Zəhmət olmasa qəbul keyfiyyətini seçin', num: 0, }
-        ];4
+        ];
 
         addNewBtn.addEventListener('click', function () {
             rowCount++;

@@ -12,6 +12,10 @@ body {
     text-transform: none !important;
 }
 
+.display_none{
+    display: none;
+}
+
 #local-broadcasts-table td{
     padding: 8px 18px !important; 
 }
@@ -27,13 +31,19 @@ body {
 .ui .error_message_input{
     position: absolute;
     left: 0;
-    top: 52px;
+    top: 47px;
+    /* font-size: 12px; */
 }
 
 .ui .error_message_input_additional{
     position: absolute;
     right: 0;
-    top: 52px;
+    /* font-size: 12px; */
+    top: 47px;
+}
+
+.error_message{
+    font-size: 12px;
 }
 
 .ui.selection.dropdown,
@@ -133,11 +143,16 @@ body {
     width: 100%;
     margin: 48px auto !important;
     margin-top: 16px !important;
+    padding-bottom: 36px;
 }
 
-.form_block > div{
-    /* padding-left: 8px !important; */
-    /* padding-right: 8px !important; */
+.lower_buttons_container button{
+    width: 100%;
+    font-size: 20px;
+}
+
+.lower_buttons_container > div{
+    padding: 0 30px !important;
 }
 
 .ui.input{
