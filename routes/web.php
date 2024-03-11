@@ -60,6 +60,8 @@ Route::middleware(['auth', 'is_admin:admin'])->group(function (){
     Route::resource('program-names', \App\Http\Controllers\Admin\ProgramNamesController::class);
 
     Route::resource('system-users', \App\Http\Controllers\Admin\SystemUsersController::class);
+    Route::post('system-users/ban-user', [\App\Http\Controllers\Admin\SystemUsersController::class, 'ban_user'])->name('system-users.ban-user');
+
     Route::resource('stations-users', \App\Http\Controllers\Admin\StationsUsersController::class);
 
     Route::resource('roles', \App\Http\Controllers\Admin\RolesController::class);
