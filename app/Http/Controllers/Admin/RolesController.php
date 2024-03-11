@@ -87,5 +87,11 @@ class RolesController extends Controller
         $role->revokePermissionTo($role->permissions);
         $role->users()->detach();
         $role->delete();
+
+        return response()->json([
+            'message' => 'Məlumatlar müvəffəqiyyətlə silind',
+            'route' => route('roles.index'),
+            'status' => 200
+        ]);
     }
 }
