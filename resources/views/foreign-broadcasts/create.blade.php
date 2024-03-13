@@ -67,35 +67,6 @@
                             <span class="text-danger error_message" id="program_locationError"></span>
                         </div>
 
-
-                        <div class="col-md-4 form-group mb-3">
-                            <div class="select_label ui sub header ">Elektromaqnit sahə gərginliyinin səviyyəsi (dBμV/m)
-                            </div>
-                            <div class="ui input">
-                                <input id="emfs_level" disabled name="emfs_level_in[]" value="{{old('emfs_level_in')}}"
-                                       step=any type="number" placeholder="">
-                                <span class="text-danger error_message_input error_message" id="emfs_levelError"></span>
-                                <input id="emfs_level_addition" name="emfs_level_out[]" step=any type="number"
-                                       value="{{old('emfs_level_out')}}" placeholder="" style="display: none">
-                                <span class="text-danger error_message_input_additional error_message display_none" id="emfs_level_additionError"></span>
-
-                            </div>
-
-                        </div>
-
-                        <div class="col-md-4 form-group mb-3">
-                            <div class="select_label ui sub header ">Kanalın qəbul edildiyi istiqamət (azimut, dərəcə)</div>
-                            <div class="ui input">
-                                <input id="response_direction" value="{{old('response_direction_in')}}" disabled
-                                       name="response_direction_in[]" type="number" placeholder="">
-                                <span class="text-danger error_message_input error_message" id="response_directionError"></span>
-
-                                <input id="response_direction_addition" value="{{old('response_direction_in')}}"
-                                       name="response_direction_out[]" type="number" placeholder="" style="display: none">
-                                <span class="text-danger error_message_input_additional error_message display_none" id="response_direction_additionError"></span>
-                            </div>
-                        </div>
-
                         <div class="col-md-4 form-group mb-3">
                             <div class="select_label ui sub header ">Polyarizasiya</div>
                             <select id="polarization" disabled name="polarization[]"
@@ -125,17 +96,53 @@
                                 <span class="text-danger error_message_input error_message" id="response_qualityError"></span>
 
 
-                                <select id="response_quality_addition" name="sending_from[]" class="form-control ui fluid search dropdown create_form_dropdown response_quality_addition for_js" style="display: none">
+                                <select id="response_quality_addition" name="sending_from[]" myUniqueItem="review_foreign" class="form-control ui fluid search dropdown create_form_dropdown response_quality_addition for_js" style="display: none">
                                     <option value="">Qeydi seçin</option>
                                     @foreach ($options as $option)
                                     <option value= "{{ $option }}">{{ $option }}</option>
                                     @endforeach
                                 </select>
                                 <span class="text-danger error_message_input_additional error_message display_none" id="response_quality_additionError"></span>
+
+
+                                <select id="cons_or_peri" name="cons_or_peri[]" myUniqueItem="period_foreign" class="form-control ui fluid search dropdown create_form_dropdown constant_periodic_select" style="display: none">
+                                    <option value="">Müddəti seçin</option>
+                                    <option value="Daimi">Daimi vurulur</option>
+                                    <option value="Periodik">Periodik vurulur</option>
+                                </select>
                             </div>
 
                             {{-- <span class="text-danger error_message_input error_message" id="response_qualityError"></span> --}}
                         </div>
+
+                        <div class="col-md-4 form-group mb-3">
+                            <div class="select_label ui sub header ">Elektromaqnit sahə gərginliyinin səviyyəsi (dBμV/m)
+                            </div>
+                            <div class="ui input">
+                                <input id="emfs_level" disabled name="emfs_level_in[]" value="{{old('emfs_level_in')}}"
+                                       step=any type="number" placeholder="">
+                                <span class="text-danger error_message_input error_message" id="emfs_levelError"></span>
+                                <input id="emfs_level_addition" name="emfs_level_out[]" step=any type="number"
+                                       value="{{old('emfs_level_out')}}" placeholder="" style="display: none">
+                                <span class="text-danger error_message_input_additional error_message display_none" id="emfs_level_additionError"></span>
+
+                            </div>
+
+                        </div>
+
+                        <div class="col-md-4 form-group mb-3">
+                            <div class="select_label ui sub header ">Kanalın qəbul edildiyi istiqamət (azimut, dərəcə)</div>
+                            <div class="ui input">
+                                <input id="response_direction" value="{{old('response_direction_in')}}" disabled
+                                       name="response_direction_in[]" type="number" placeholder="">
+                                <span class="text-danger error_message_input error_message" id="response_directionError"></span>
+
+                                <input id="response_direction_addition" value="{{old('response_direction_in')}}"
+                                       name="response_direction_out[]" type="number" placeholder="" style="display: none">
+                                <span class="text-danger error_message_input_additional error_message display_none" id="response_direction_additionError"></span>
+                            </div>
+                        </div>
+                        
                     </div>
                 </div>
 
@@ -197,6 +204,7 @@
             { id: 'response_direction', name: 'Kanalın qəbul edildiyi istiqamət', errorId: 'response_directionError', errorMessage: 'Zəhmət olmasa dərəcəni daxil edin', num: 0, },
             { id: 'polarization', name: 'Polyarizasiya', errorId: 'polarizationError', errorMessage: 'Zəhmət olmasa polyarizasiya seçin', num: 0, },
             { id: 'response_quality', name: 'Qəbulun keyfiyyəti və interferensiya yaratması', errorId: 'response_qualityError', errorMessage: 'Zəhmət olmasa qəbul keyfiyyətini seçin', num: 0, },
+            // { id: 'response_quality', name: 'Qəbulun keyfiyyəti və interferensiya yaratması', errorId: 'response_qualityError', errorMessage: 'Zəhmət olmasa qəbul keyfiyyətini seçin', num: 0, },
         ];
 
         foreignAddNewBtn.addEventListener('click', function () {
@@ -390,76 +398,6 @@
             //         { id: 'emfs_level_addition', name: 'Elektromaqnit sahə gərginliyinin səviyyəsi', errorId: 'emfs_level_additionError', errorMessage: 'Zəhmət olmasa EMSG səviyyəsini daxil edin' }
             //     );
             // }
-
-            fields.forEach(function(field) {
-                var value = $('#' + field.id).val();
-                value ? value.trim() : null;
-                var errorSpan = $('#' + field.errorId);
-
-                if (!value) {
-                    errorSpan.text(field.errorMessage);
-                    formValid = false;
-                } else {
-                    errorSpan.text('');
-                }
-            });
-
-            if (formValid) {
-                Swal.fire({
-                    title: "Məlumatların doğruluğunu təsdiq edirsinizmi ?",
-                    text: "Məlumatlar göndərildikdən sonra rəhbərlik tərəfindən düzəliş üçün geri qaytarıla bilər!",
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#3085d6",
-                    cancelButtonColor: "#d33",
-                    confirmButtonText: "Təsdiq edirəm"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        const formData = new FormData(this);
-                        formData.append('_token', "{{ csrf_token() }}");
-
-                        $.ajax({
-                            url: form.attr('action'),
-                            method: "POST",
-                            data: formData,
-                            processData: false,
-                            contentType: false,
-                            success: function(response) {
-                                if(response.status == 409)
-                                {
-                                    Swal.fire({
-                                        title: "Məlumatlar daxil edilmədi",
-                                        text: response.message,
-                                        icon: "info"
-                                    }).then((result) => {
-                                        if(result.isConfirmed) {
-                                            window.location.href = response.route;
-                                        }
-                                    });
-                                }
-                                else
-                                {
-                                    Swal.fire({
-                                        title: "Məlumatlar daxil edildi",
-                                        text: response.message,
-                                        icon: "success"
-                                    }).then((result) => {
-                                        if(result.isConfirmed) {
-                                            window.location.href = response.route;
-                                        }
-                                    });
-                                }
-                            }
-                        });
-                    }
-                });
-            }
-        });
-
-        $('.store-local-report-form').submit(function(e) {
-            e.preventDefault();
-            const form = $(this);
-            var formValid = true;
 
             fields.forEach(function(field) {
                 var value = $('#' + field.id).val();

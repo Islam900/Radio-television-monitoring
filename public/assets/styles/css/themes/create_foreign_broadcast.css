@@ -169,6 +169,7 @@ body {
     font-family: sans-serif !important;
 }
 
-.ui.fluid.dropdown.response_quality_addition{
+.ui.fluid.dropdown.response_quality_addition,
+.ui.fluid.dropdown.constant_periodic_select {
     display: none !important;
 }
