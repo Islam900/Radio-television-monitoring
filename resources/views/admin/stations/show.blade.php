@@ -327,12 +327,18 @@
                             }
 
                             const responseData = await response.json();
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Uğurlu',
-                                text: responseData.message
-                            });
-                            location.reload();
+                            if(responseData.status == 200)
+                            {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Uğurlu',
+                                    text: responseData.message
+                                }).then((result) => {
+                                    if(result.isConfirmed) {
+                                        window.location.href = responseData.route;
+                                    }
+                                });
+                            }
                         } catch (error) {
                             Swal.showValidationMessage(`${error.message}`);
                         }

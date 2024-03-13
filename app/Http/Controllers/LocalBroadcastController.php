@@ -29,7 +29,7 @@ class LocalBroadcastController extends Controller
     public function create()
     {
         $station = Stations::find(Auth::user()->stations_id);
-        $frequencies = $station->frequencies;
+        $frequencies = $station->frequencies()->distinct()->get();
         $devices = config('data.devices');
         return view('local-broadcasts.create', compact('frequencies', 'devices'));
     }

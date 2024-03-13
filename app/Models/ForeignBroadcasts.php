@@ -27,6 +27,7 @@ class ForeignBroadcasts extends Model
         'polarization',
         'response_quality',
         'sending_from',
+        'cons_or_peri',
         'note',
         'device'
     ];

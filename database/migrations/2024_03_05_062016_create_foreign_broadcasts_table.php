@@ -27,6 +27,7 @@ return new class extends Migration {
             $table->string('polarization');
             $table->string('response_quality');
             $table->string('sending_from')->nullable();
+            $table->string('cons_or_peri')->nullable();
             $table->text('note')->nullable();
             $table->string('device');
             $table->integer('accepted_status')->default(0);

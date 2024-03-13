@@ -99,22 +99,67 @@
                         </select>
 
                         <span class="text-danger error_message_input" id="program_locationError"></span>
+                    </div>
 
+                    <div class="col-md-4 form-group mb-3">
+                        <div class="select_label ui sub header ">Polyarizasiya</div>
+                        <select id="polarization" disabled name="polarization[]"
+                                class="form-control ui fluid search dropdown create_form_dropdown depended_from_frequency">
+                            <option value="{{ $polarizations->id }}" selected>{{ $polarizations->name }}</option>
+                        </select>
+                        <span class="text-danger error_message" id="polarizationError"></span>
+                    </div>
+
+                    <div class="col-md-4 form-group mb-3">
+                        <div class="select_label ui sub header ">Qəbulun keyfiyyəti və interferensiya yaratması</div>
+
+                        <div class="ui input">
+                            <select id="response_quality" name="response_quality" myUniqueItem="response_quality_foreign"
+                                    class="form-control ui fluid search dropdown create_form_dropdown">
+                                <option value="">Qəbulun keyfiyyəti və interferensiya yaratmasını seçin</option>
+                                <option value="Yaxşı" {{ $foreignBroadcast->response_quality == 'Yaxşı' ?  'selected' : '' }}>
+                                    Yaxşı
+                                </option>
+                                <option value="Kafi" {{ $foreignBroadcast->response_quality == 'Kafi' ?  'selected' : '' }}>Kafi
+                                </option>
+                                <option value="Zəif" {{ $foreignBroadcast->response_quality == 'Zəif' ?  'selected' : '' }}>Zəif
+                                </option>
+                                <option value="Vurulur" {{ $foreignBroadcast->response_quality == 'Vurulur' ?  'selected' : '' }}>
+                                    Vurulur
+                                </option>
+                            </select>
+                            <span class="text-danger error_message_input error_message" id="response_qualityError"></span>
+
+                            @if($foreignBroadcast->sending_from != NULL)
+                                <select id="response_quality_addition" name="sending_from" myUniqueItem="review_foreign" class="form-control ui fluid search dropdown create_form_dropdown response_quality_addition for_js" style="display: none">
+                                    <option value="">Qeydi seçin</option>
+                                    @foreach ($options as $option)
+                                        <option value= "{{ $option }}" {{ $foreignBroadcast->sending_from == $option ? 'selected' : '' }}>{{ $option }}</option>
+                                    @endforeach
+                                </select>
+                                <span class="text-danger error_message_input_additional error_message display_none" id="response_quality_additionError"></span>
+
+                                    <select id="cons_or_peri" name="cons_or_peri" myUniqueItem="period_foreign" class="form-control ui fluid search dropdown create_form_dropdown @if($foreignBroadcast->cons_or_peri == NULL)  constant_periodic_select @endif">
+                                        <option value="">Müddəti seçin</option>
+                                        <option value="Daimi" {{ $foreignBroadcast->cons_or_peri == 'Daimi' ? 'selected' : '' }}>Daimi vurulur</option>
+                                        <option value="Periodik" {{ $foreignBroadcast->cons_or_peri == 'Periodik' ? 'selected' : '' }}>Periodik vurulur</option>
+                                    </select>
+                            @endif
+                        </div>
+
+                        {{-- <span class="text-danger error_message_input error_message" id="response_qualityError"></span> --}}
                     </div>
 
                     <div class="col-md-4 form-group mb-3">
                         <div class="select_label ui sub header ">Elektromaqnit sahə gərginliyinin səviyyəsi (dBμV/m)
                         </div>
                         <div class="ui input">
-                            <input id="emfs_level" disabled name="emfs_level_in"
-                                   value="{{$foreignBroadcast->emfs_level_in}}"
+                            <input id="emfs_level" disabled name="emfs_level_in" value="{{ $foreignBroadcast->emfs_level_in }}"
                                    step=any type="number" placeholder="">
-                            <span class="text-danger error_message_input" id="emfs_levelError"></span>
+                            <span class="text-danger error_message_input error_message" id="emfs_levelError"></span>
                             <input id="emfs_level_addition" name="emfs_level_out" step=any type="number"
-                                   value="{{$foreignBroadcast->emfs_level_out}}" placeholder=""
-                                   @if($foreignBroadcast->emfs_level_out == null) style="display: none" @endif>
-                            <span class="text-danger error_message_input_additional"
-                                  id="emfs_level_additionError"></span>
+                                   value="{{ $foreignBroadcast->emfs_level_out}}" placeholder="" style="display: none">
+                            <span class="text-danger error_message_input_additional error_message display_none" id="emfs_level_additionError"></span>
 
                         </div>
 
@@ -123,70 +168,16 @@
                     <div class="col-md-4 form-group mb-3">
                         <div class="select_label ui sub header ">Kanalın qəbul edildiyi istiqamət (azimut, dərəcə)</div>
                         <div class="ui input">
-                            <input id="response_direction" value="{{$foreignBroadcast->response_direction_in}}" disabled
+                            <input id="response_direction" value="{{$foreignBroadcast->response_direction_in }}" disabled
                                    name="response_direction_in" type="number" placeholder="">
-                            <span class="text-danger error_message_input" id="response_directionError"></span>
+                            <span class="text-danger error_message_input error_message" id="response_directionError"></span>
 
-                            <input id="response_direction_addition"
-                                   value="{{$foreignBroadcast->response_direction_out}}"
-                                   name="response_direction_out" type="number" placeholder=""
-                                   @if($foreignBroadcast->response_direction_out == null) style="display: none" @endif>
-                            <span class="text-danger error_message_input_additional"
-                                  id="response_direction_additionError"></span>
-
+                            <input id="response_direction_addition" value="{{$foreignBroadcast->response_direction_in }}"
+                                   name="response_direction_out" type="number" placeholder="" style="display: none">
+                            <span class="text-danger error_message_input_additional error_message display_none" id="response_direction_additionError"></span>
                         </div>
                     </div>
-
-                    <div class="col-md-4 form-group mb-3">
-                        <div class="select_label ui sub header ">Polyarizasiya</div>
-                        <select id="polarization" disabled name="polarization"
-                                class="form-control ui fluid search dropdown create_form_dropdown">
-                            <option value="">Polyarizasiyanı seçin</option>
-                            <option value="{{$polarizations->name}}" selected>{{$polarizations->name}}</option>
-                        </select>
-                        <span class="text-danger error_message_input" id="polarizationError"></span>
-                    </div>
-
-                    <div class="col-md-4 form-group mb-3">
-                        <div class="select_label ui sub header ">Qəbulun keyfiyyəti və interferensiya yaratması</div>
-
-                        <div class="ui input">
-                            <select id="response_quality" name="response_quality"
-                                    class="form-control ui fluid search dropdown create_form_dropdown">
-                                <option value="">Qəbulun keyfiyyəti və interferensiya yaratmasını seçin</option>
-                                <option
-                                    value="Yaxşı" {{ $foreignBroadcast->response_quality == 'Yaxşı' ?  'selected' : '' }}>
-                                    Yaxşı
-                                </option>
-                                <option
-                                    value="Kafi" {{ $foreignBroadcast->response_quality == 'Kafi' ?  'selected' : '' }}>
-                                    Kafi
-                                </option>
-                                <option
-                                    value="Zəif" {{ $foreignBroadcast->response_quality == 'Zəif' ?  'selected' : '' }}>
-                                    Zəif
-                                </option>
-                                <option
-                                    value="Vurulur" {{ $foreignBroadcast->response_quality == 'Vurulur' ?  'selected' : '' }}>
-                                    Vurulur
-                                </option>
-                            </select>
-                            <span class="text-danger error_message_input" id="response_qualityError"></span>
-
-
-                            <select id="response_quality_addition" name="sending_from"
-                                    class="form-control ui fluid search dropdown create_form_dropdown response_quality_addition for_js"
-                                    @if($foreignBroadcast->sending_from == null) style="display: none!important;" @endif>
-                                <option value="">Qeydi seçin</option>
-                                @foreach ($options as $option)
-                                    <option value="{{ $option }}" {{ $foreignBroadcast->sending_from==$option ? 'selected' : '' }}>{{ $option }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <span class="text-danger error_message_input_additional"
-                              id="response_quality_additionError"></span>
-                    </div>
+<!-- ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- -->
 
                     <div class="col-lg-12">
                         <label for="device">Ölçmədə istifadə olunan cihazlar</label>
@@ -217,7 +208,7 @@
                     </div>
 
                     <div class="col-md-12 mt-4">
-                        <button class="btn btn-success btn-lg">Daxil edin</button>
+                        <button type="submit" class="btn btn-success btn-lg">Daxil edin</button>
                     </div>
                 </div>
             </form>
@@ -314,7 +305,8 @@
             }
 
             fields.forEach(function (field) {
-                var value = $('#' + field.id).val().trim();
+                var value = $('#' + field.id).val();
+                value ? value.trim() : null;
                 var errorSpan = $('#' + field.errorId);
 
                 if (!value) {

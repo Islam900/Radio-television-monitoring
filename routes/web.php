@@ -63,6 +63,11 @@ Route::middleware(['auth', 'is_admin:admin'])->group(function (){
     Route::post('system-users/ban-user', [\App\Http\Controllers\Admin\SystemUsersController::class, 'ban_user'])->name('system-users.ban-user');
     Route::post('system-users/unban-user', [\App\Http\Controllers\Admin\SystemUsersController::class, 'unban_user'])->name('system-users.unban-user');
 
+    Route::resource('station-users', \App\Http\Controllers\Admin\StationsUsersController::class);
+    Route::post('station-users/ban-user', [\App\Http\Controllers\Admin\StationsUsersController::class, 'ban_user'])->name('station-users.ban-user');
+    Route::post('station-users/unban-user', [\App\Http\Controllers\Admin\StationsUsersController::class, 'unban_user'])->name('station-users.unban-user');
+
+
     Route::resource('stations-users', \App\Http\Controllers\Admin\StationsUsersController::class);
 
     Route::get('logs', [\App\Http\Controllers\Admin\DashboardController::class, 'logs'])->name('logs');

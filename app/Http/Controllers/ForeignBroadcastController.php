@@ -31,7 +31,7 @@ class ForeignBroadcastController extends Controller
     public function create()
     {
         $station = Stations::find(Auth::user()->stations_id);
-        $frequencies = $station->frequencies;
+        $frequencies = $station->frequencies()->distinct()->get();
         $devices = config('data.devices');
         $options = config('data.options');
         return view('foreign-broadcasts.create', compact('frequencies',  'devices', 'options'));
@@ -78,6 +78,7 @@ class ForeignBroadcastController extends Controller
                 'polarization' => $request->polarization[$key],
                 'response_quality' => $request->response_quality[$key],
                 'sending_from' => $request->sending_from[$key] ?? NULL,
+                'cons_or_peri' => $request->cons_or_peri[$key] ?? NULL,
                 'device' => implode(',', array_keys($request->device)),
                 'note' => $request->note
             ]);

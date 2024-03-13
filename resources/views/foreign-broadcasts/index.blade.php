@@ -31,6 +31,7 @@
                         <th>Polyarizasiya</th>
                         <th>Qəbulun keyfiyyəti</th>
                         <th>Vurulma istiqaməti</th>
+                        <th>Vurulma növü</th>
                         <th>Təsdiq statusu</th>
                         <th>Əməliyyatlar</th>
                     </tr>
@@ -68,6 +69,9 @@
                             </td>
                             <td>
                                 {{$report->sending_from}}
+                            </td>
+                            <td>
+                                {{$report->cons_or_peri}}
                             </td>
                             <td>
                                 @if($report->accepted_status == 0)
