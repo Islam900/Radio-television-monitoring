@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\LogsController;
 use App\Models\Directions;
+use App\Models\Logs;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 
@@ -27,7 +30,7 @@ class DirectionsController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'value' => 'required',
+            'name' => 'required',
             'status' => 'required',
         ]);
 
@@ -38,6 +41,8 @@ class DirectionsController extends Controller
         }
 
         Directions::create($request->all());
+
+        (new LogsController())->create_logs(Auth::user()->name_surname. ' ' . $request->name .' adlı istiqaməti sistemə daxil etdi');
 
         return redirect()->route('Directions.index')
             ->with('store_success', 'Məlumatlar müvəffəqiyyətlə əlavə edildi');
@@ -56,7 +61,7 @@ class DirectionsController extends Controller
     public function update(Request $request, Directions $direction)
     {
         $validator = Validator::make($request->all(), [
-            'value' => 'required',
+            'name' => 'required',
             'status' => 'required',
         ]);
 
@@ -68,12 +73,17 @@ class DirectionsController extends Controller
 
         $direction->update($request->all());
 
+        (new LogsController())->create_logs(Auth::user()->name_surname. ' ' . $request->name .' adlı istiqamət məlumatlarını dəyişdirdi');
+
+
         return redirect()->route('directions.index')
             ->with('store_success', 'Məlumatlar müvəffəqiyyətlə yeniləndi');
     }
 
     public function destroy(Directions $direction)
     {
+        (new LogsController())->create_logs(Auth::user()->name_surname. ' ' . $direction->name .' adlı istiqamət məlumatlarını sistemdən sildi');
+
         $direction->delete();
 
         return redirect()->route('directions.index')

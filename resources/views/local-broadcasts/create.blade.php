@@ -29,11 +29,11 @@
                                 @empty
                                     <option disabled selected>Məlumat yoxdur</option>
                                 @endforelse
-    
+
                             </select>
                             <span class="text-danger error_message" id="frequencies_idError"></span>
                         </div>
-    
+
                         <div class="col-md-4 form-group mb-3">
                             <div class="select_label ui sub header">Proqram adı</div>
                             <select id="program_name_select" disabled name="program_names_id[]"
@@ -42,7 +42,7 @@
                             </select>
                             <span class="text-danger error_message" id="program_names_idError"></span>
                         </div>
-    
+
                         <div class="col-md-4 form-group mb-3">
                             <div class="select_label ui sub header">İstiqamət</div>
                             <select id="direction_select" disabled name="directions_id[]"
@@ -50,7 +50,7 @@
                             </select>
                             <span class="text-danger error_message" id="directions_idError"></span>
                         </div>
-    
+
                         <div class="col-md-4 form-group mb-3">
                             <div class="select_label ui sub header ">Proqram dili</div>
                             <select id="program_lang" disabled name="program_languages_id[]"
@@ -58,8 +58,8 @@
                             </select>
                             <span class="text-danger error_message" id="program_langError"></span>
                         </div>
-    
-    
+
+
                         <div class="col-md-4 form-group mb-3">
                             <div class="select_label ui sub header ">Elektromaqnit sahə gərginliyinin səviyyəsi (dBμV/m)
                             </div>
@@ -69,7 +69,7 @@
                             </div>
                             <span class="text-danger error_message" id="emfs_levelError"></span>
                         </div>
-    
+
                         <div class="col-md-4 form-group mb-3">
                             <div class="select_label ui sub header ">Kanalın qəbul edildiyi istiqamət (azimut, dərəcə)</div>
                             <div class="ui input">
@@ -78,7 +78,7 @@
                             </div>
                              <span class="text-danger error_message" id="response_directionError"></span>
                         </div>
-    
+
                         <div class="col-md-4 form-group mb-3">
                             <div class="select_label ui sub header ">Polyarizasiya</div>
                             <select id="polarization" disabled name="polarization[]"
@@ -86,10 +86,10 @@
                             </select>
                             <span class="text-danger error_message" id="polarizationError"></span>
                         </div>
-    
+
                         <div class="col-md-4 form-group mb-3">
                             <div class="select_label ui sub header ">Qəbulun keyfiyyəti və interferensiya yaratması</div>
-    
+
                             <div class="ui input">
                                 <select id="response_quality" name="response_quality[]" myUniqueItem="response_quality_local"
                                         class="form-control ui fluid search dropdown create_form_dropdown">
@@ -134,13 +134,16 @@
                               placeholder="Əlavə qeydi daxil edin.."></textarea>
                 </div>
 
-                <div class="col-md-12 mt-4">
-                    <button class="btn btn-success btn-lg">Daxil edin</button>
+                <div class="lower_buttons_container d-flex align-items-center row">
+                    <div class="col-6 ">
+                        <button class="btn btn-success btn-lg">Hesabatı daxil et</button>
+                    </div>
+
+                    <div class="col-6 ">
+                        <button type="button" class="btn btn-success btn-lg" id="addRow">Yenisini əlavə et</button>
+                    </div>
                 </div>
             </form>
-            <div class="col-md-12 mt-4">
-                <button class="btn btn-success btn-lg" id="addRow">Yeni</button>
-            </div>
         </div>
     </div>
 @endsection
@@ -211,7 +214,7 @@
             $('.ui.create_form_dropdown').dropdown({
                 clearable: true,
             });
-            
+
             $('.frequency_select_cl').dropdown({
                 allowAdditions: true,
                 clearable: true,
@@ -239,7 +242,7 @@
             fields = fields.filter(field => field.num != number)
             console.log(fields)
         });
-        
+
     </script>
 
     <script>
@@ -255,7 +258,7 @@
                     const id = e.target.id;
                     let lastChar = '';
                     if(id && id.length > 0) {
-                        const char = Number(id.charAt(id.length - 1)); 
+                        const char = Number(id.charAt(id.length - 1));
                         if(!isNaN(char)){
                             lastChar = char;
                         }

@@ -66,7 +66,7 @@ $(document).on('change', '[myUniqueItem^="response_quality_foreign"]', function(
 function handleChangeBlocks_FOREIGN(quality_element) {
     const selectedValue = $(`#${quality_element}`).find(":selected").val();
     const isVurulur = selectedValue === 'Vurulur';
-    const isYaxsiOrKafi = selectedValue === 'Yaxşı' || selectedValue === 'Kafi';
+    const isYaxsiOrKafi = selectedValue === 'Yaxşı' || selectedValue === 'Kafi' || selectedValue === 'Zəif';
     const uniqueIndex = quality_element.substring(16, quality_element.length);
 
     foreign_input_collection.response_quality_addition.map(response_quality_addition => {
@@ -104,7 +104,7 @@ function handleChangeBlocks_FOREIGN(quality_element) {
 function handleChangeBlocks(quality_element) {
     const selectedValue = $(`#${quality_element}`).find(":selected").val();
     const isVurulur = selectedValue === 'Vurulur';
-    const isYaxsiOrKafi = selectedValue === 'Yaxşı' || selectedValue === 'Kafi';
+    const isYaxsiOrKafi = selectedValue === 'Yaxşı' || selectedValue === 'Kafi' || selectedValue === 'Zəif';
     const uniqueIndex = quality_element.substring(16, quality_element.length);
 
     local_input_collection.response_quality_addition.map(response_quality_addition => {

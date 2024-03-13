@@ -84,14 +84,14 @@
                                             </td>
                                             <td>
                                                 @if($report->accepted_status == 0)
-                                                    <button class="btn btn-warning" id="change-status-edit"
+                                                    <button class="btn btn-warning change-status-edit"
                                                             data-report-id="{{$report->id}}" data-accepted-status="2">
                                                         <span>
                                                             <i class="nav-icon i-Pen-2 font-weight-bold"></i>
                                                         </span>
                                                     </button>
 
-                                                    <button class="btn btn-success" id="change-status-confirm"
+                                                    <button class="btn btn-success change-status-confirm"
                                                             data-report-id="{{$report->id}}"
                                                             data-accepted-status="1">
                                                         <span>
@@ -172,14 +172,14 @@
                                             </td>
                                             <td>
                                                 @if($report->accepted_status == 0)
-                                                    <button class="btn btn-warning" id="f-change-status-edit"
+                                                    <button class="btn btn-warning f-change-status-edit" id=""
                                                             data-report-id="{{$report->id}}" data-accepted-status="2">
                                                             <span>
                                                                 <i class="nav-icon i-Pen-2 font-weight-bold"></i>
                                                             </span>
                                                     </button>
 
-                                                    <button class="btn btn-success" id="f-change-status-confirm"
+                                                    <button class="btn btn-success f-change-status-confirm" id=""
                                                             data-report-id="{{$report->id}}"
                                                             data-accepted-status="1">
                                                     <span>
@@ -209,7 +209,7 @@
         $(document).ready(function () {
 
             // send to update function
-            $('#change-status-edit').on('click', function () {
+            $('.change-status-edit').on('click', function () {
                 const button = $(this);
                 Swal.fire({
                     title: "Zəhmət olmasa düzəlişə göndərilmə səbəbini daxil edin",
@@ -264,7 +264,7 @@
             })
 
             //confirm function
-            $('#change-status-confirm   ').on('click', function () {
+            $('.change-status-confirm').on('click', function () {
                 const button = $(this);
                 Swal.fire({
                     title: "Məlumatların düzgünlüyünü təsdiq edirsiniz ?",
@@ -293,7 +293,7 @@
             })
 
 
-            $('#f-change-status-edit').on('click', function () {
+            $('.f-change-status-edit').on('click', function () {
                 const button = $(this);
                 Swal.fire({
                     title: "Zəhmət olmasa düzəlişə göndərilmə səbəbini daxil edin",
@@ -342,7 +342,7 @@
             })
 
             //confirm function
-            $('#f-change-status-confirm   ').on('click', function () {
+            $('.f-change-status-confirm').on('click', function () {
                 const button = $(this);
                 Swal.fire({
                     title: "Məlumatların düzgünlüyünü təsdiq edirsiniz ?",
@@ -353,20 +353,35 @@
                     cancelButtonColor: "#d33",
                     confirmButtonText: "Təsdiq edin!"
                 }).then((result) => {
-                    const status_data = button.data('accepted-status');
-                    const report_id = button.data('report-id');
-                    $.ajax({
-                        url:"{{route('dashboard-foreign-broadcasts.confirm')}}",
-                        method:"POST",
-                        data:{
-                            "_token":"{{csrf_token()}}",
-                            "report_id": report_id,
-                            "accepted_status": status_data,
-                        },
-                        success:function(){
-                            location.reload();
-                        }
-                    })
+                    if(result.isConfirmed)
+                    {
+                        const status_data = button.data('accepted-status');
+                        const report_id = button.data('report-id');
+                        $.ajax({
+                            url:"{{route('dashboard-foreign-broadcasts.confirm')}}",
+                            method:"POST",
+                            data:{
+                                "_token":"{{csrf_token()}}",
+                                "report_id": report_id,
+                                "accepted_status": status_data,
+                            },
+                            success:function(response){
+                                if(response.status == 200)
+                                {
+                                    Swal.fire({
+                                        title: "Məlumatlar daxil edildi",
+                                        text: response.message,
+                                        icon: "success"
+                                    }).then((result) => {
+                                        console.log(result);
+                                        if(result.isConfirmed) {
+                                            window.location.href = response.route;
+                                        }
+                                    });
+                                }
+                            }
+                        })
+                    }
                 });
             })
         })

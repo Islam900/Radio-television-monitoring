@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Frequencies;
 use App\Models\FrequenciesStations;
 use App\Models\LocalBroadcasts;
+use App\Models\Logs;
 use App\Models\Notifications;
 use App\Models\Stations;
 use Illuminate\Http\Request;
@@ -86,6 +87,8 @@ class LocalBroadcastController extends Controller
             'r_read' => 0,
         ]);
 
+        (new LogsController())->create_logs(Auth::user()->name_surname. ' ' . Auth::user()->stations->station_name .' üçün yerli ölçmələrin hesabatını sistemə daxil etdi.');
+
         return response()->json([
             'title' => 'Məlumatlar sistemə daxil edildi.',
             'message' => $submitDate . ' tarixi üçün məlumatlar sistemə daxil edildi.',
@@ -157,6 +160,8 @@ class LocalBroadcastController extends Controller
             's_read' => 0,
             'r_read' => 0,
         ]);
+
+        (new LogsController())->create_logs(Auth::user()->name_surname. ' ' . Auth::user()->stations->station_name .' üçün verilən '. $localBroadcast->report_number .' nömrəli ölçmələrin hesabatında düzəliş etdi.');
 
         return response()->json([
             'message' => 'Məlumatlar yenilənib təsdiq üçün göndərildi.',

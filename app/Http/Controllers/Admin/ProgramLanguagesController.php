@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\LogsController;
 use App\Models\Frequencies;
+use App\Models\Logs;
 use App\Models\ProgramLanguages;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 
@@ -40,6 +43,7 @@ class ProgramLanguagesController extends Controller
 
         ProgramLanguages::create($request->all());
 
+        (new LogsController())->create_logs(  Auth::user()->name_surname. ' ' . $request->name .' adlı proqram dilini sistemə daxil etdi');
         return redirect()->route('program-languages.index')
             ->with('store_success', 'Məlumatlar müvəffəqiyyətlə əlavə edildi');
     }
@@ -69,12 +73,16 @@ class ProgramLanguagesController extends Controller
 
         $program_language->update($request->all());
 
+        (new LogsController())->create_logs(  Auth::user()->name_surname. ' ' . $request->name .' adlı proqram dili məlumatlarını dəyişdirdi');
+
         return redirect()->route('program-languages.index')
             ->with('store_success', 'Məlumatlar müvəffəqiyyətlə yeniləndi');
     }
 
     public function destroy(ProgramLanguages $program_language)
     {
+        (new LogsController())->create_logs(  Auth::user()->name_surname. ' ' . $program_language->name .' adlı proqramın yayımlandığı dil məlumatlarını sistemdən sildi');
+
         $program_language->delete();
 
         return redirect()->route('program-languages.index')

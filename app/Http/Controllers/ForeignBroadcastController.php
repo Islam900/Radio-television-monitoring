@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ForeignBroadcasts;
 use App\Models\Frequencies;
 use App\Models\FrequenciesStations;
+use App\Models\Logs;
 use App\Models\Notifications;
 use App\Models\Stations;
 use Illuminate\Http\Request;
@@ -41,36 +42,46 @@ class ForeignBroadcastController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $request->all();
         $submitDate = Carbon::now()->format('Y-m-d');
-        $existing_report = ForeignBroadcasts::where('stations_id', Auth::user()->stations_id)->whereDate('report_date', $submitDate)->first();
-        if ($existing_report) {
-            return response()->json([
-                'message' => 'Bu gün üçün artıq sistemə hesabat daxil olunub.',
-                'route' => route('foreign-broadcasts.index'),
-                'status' => 409
-            ]);
-        }
         $frequencies = Frequencies::pluck('value')->toArray();
-        if (!in_array((float) $request->frequencies_id, $frequencies)) {
-            $frequency = Frequencies::create([
-                'value' => $request->frequencies_id
-            ]);
+        $stations_id = Auth::user()->stations_id;
+        $report_date = $submitDate;
+        $report_number = "FR-" . rand(0, 999999);
+        foreach ($request->frequencies_id as $key => $local_frequency) {
+            if (!in_array((float) $local_frequency, $frequencies)) {
+                $frequency = Frequencies::create([
+                    'value' => $local_frequency
+                ]);
 
-            FrequenciesStations::create([
-                'frequencies_id' => $frequency->id,
-                'stations_id' => Auth::user()->stations_id
+                FrequenciesStations::create([
+                    'frequencies_id' => $frequency->id,
+                    'stations_id' => Auth::user()->stations_id
+                ]);
+
+                $fr_id = $frequency->id;
+            } else {
+                $fr_id = Frequencies::where('value', $local_frequency)->first()->id;
+            }
+
+            $foreign = ForeignBroadcasts::create([
+                'report_number' => $report_number,
+                'stations_id' => $stations_id,
+                'report_date' => $report_date,
+                'frequencies_id' => $fr_id,
+                'program_names_id' => $request->program_names_id[$key],
+                'directions_id' => $request->directions_id[$key],
+                'program_languages_id' => $request->program_languages_id[$key],
+                'emfs_level_in' => $request->emfs_level_in[$key],
+                'emfs_level_out' => $request->emfs_level_out[$key] ?? NULL,
+                'response_direction_in' => $request->response_direction_in[$key],
+                'response_direction_out' => $request->response_direction_out[$key] ?? NULL,
+                'polarization' => $request->polarization[$key],
+                'response_quality' => $request->response_quality[$key],
+                'sending_from' => $request->sending_from[$key] ?? NULL,
+                'device' => implode(',', array_keys($request->device)),
+                'note' => $request->note
             ]);
-            $data['frequencies_id'] = $frequency->id;
         }
-        else
-        {
-            $data['frequencies_id'] = Frequencies::where('value', $request->frequencies_id)->first()->id;
-        }
-        $data['stations_id'] = Auth::user()->stations_id;
-        $data['device'] = implode(',', array_keys($request->device));
-        $data['report_date'] = $submitDate;
-        $foreign = ForeignBroadcasts::create($data);
 
         Notifications::create([
             'sender' => Auth::user()->stations->station_name,
@@ -80,6 +91,8 @@ class ForeignBroadcastController extends Controller
             's_read' => 0,
             'r_read' => 0,
         ]);
+
+        (new LogsController())->create_logs(Auth::user()->name_surname. ' ' . Auth::user()->stations->station_name .' üçün kənar ölçmələrin gündəlik hesabatını sistemə daxil etdi.');
 
         return response()->json([
             'title' => 'Məlumatlar sistemə daxil edildi.',
@@ -155,6 +168,8 @@ class ForeignBroadcastController extends Controller
             's_read' => 0,
             'r_read' => 0,
         ]);
+
+        (new LogsController())->create_logs(Auth::user()->name_surname. ' ' . Auth::user()->stations->station_name .' üçün verilən '. $foreignBroadcast->report_number .' nömrəli ölçmələrin gündəlik hesabatında düzəliş etdi.');
 
         return response()->json([
             'message' => 'Məlumatlar yenilənib təsdiq üçün göndərildi.',

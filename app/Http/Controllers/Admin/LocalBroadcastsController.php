@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\LogsController;
 use App\Models\EditReasons;
 use App\Models\LocalBroadcasts;
+use App\Models\Logs;
 use App\Models\Notifications;
 use Egulias\EmailValidator\Result\Reason\Reason;
 use Illuminate\Http\Request;
@@ -33,6 +35,8 @@ class LocalBroadcastsController extends Controller
             'r_read' => 0,
         ]);
 
+        (new LogsController())->create_logs(  Auth::user()->name_surname. ' ' . $report->report_date.' tarixi üçün '.$report->stations->station_name.' tərəfindən göndərilən yerli ölçmələrin hesabatını düzəliş üçün geri göndərdi.');
+
         return response()->json([
             'message' => 'Gündəlik hesabat düzəliş üçün məntəqəyə göndərildi',
             'route' => route('stations.show', $report->stations->id),
@@ -54,6 +58,8 @@ class LocalBroadcastsController extends Controller
             's_read' => 0,
             'r_read' => 0,
         ]);
+
+        (new LogsController())->create_logs(  Auth::user()->name_surname. ' ' . $report->report_date.' tarixi üçün '.$report->stations->station_name.' tərəfindən göndərilən yerli ölçmələrin hesabatını təsdiq etdi.');
 
         return response()->json([
             'message' => 'Gündəlik hesabat təsdiqləndi',

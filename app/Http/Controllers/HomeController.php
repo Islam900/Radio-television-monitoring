@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Frequencies;
 use App\Models\LocalBroadcasts;
+use App\Models\Logs;
 use App\Models\Stations;
 use App\Models\User;
 use Carbon\Carbon;
@@ -51,6 +52,8 @@ class HomeController extends Controller
 
     public function update_station_profile(Request $request, $id)
     {
+        (new LogsController())->create_logs(Auth::user()->name_surname. ' hesab məlumatlarında düzəliş etdi.');
+
         $validator = Validator::make($request->all(), [
             'name_surname' => 'required|string',
             'contact_number' => 'required|string',

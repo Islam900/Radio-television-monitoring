@@ -28,6 +28,14 @@
             <div class="triangle"></div>
         </li>
         @endcan
+
+            <li class="nav-item">
+                <a class="nav-item-hold" href="{{route('logs')}}">
+                    <i class="nav-icon i-Light-Bulb"></i>
+                    <span class="nav-text">Loqlar</span>
+                </a>
+                <div class="triangle"></div>
+            </li>
     </ul>
 </div>
 

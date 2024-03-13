@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('foreign_broadcasts', function (Blueprint $table) {
             $table->id();
-            $table->string('report_number')->unique();
+            $table->string('report_number');
             $table->foreignId('stations_id')->constrained('stations')->cascadeOnUpdate()->cascadeOnDelete();
             $table->date('report_date')->default(\Carbon\Carbon::now());
             $table->foreignId('frequencies_id')->constrained('frequencies')->cascadeOnDelete()->cascadeOnUpdate();

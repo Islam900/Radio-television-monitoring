@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\LogsController;
+use App\Models\Logs;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -40,6 +43,8 @@ class RolesController extends Controller
         $permissions = Permission::whereIn('id', $request->permission)->pluck('name')->toArray();
         $role->syncPermissions($permissions);
 
+        (new LogsController())->create_logs(Auth::user()->name_surname. ' ' . $request->role .' adlı vəzifəni sistemə daxil etdi');
+
         return redirect()->route('roles.index');
     }
 
@@ -67,12 +72,16 @@ class RolesController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        (new LogsController())->create_logs(Auth::user()->name_surname. ' ' . $request->role .' adlı vəzifə məlumatlarında düzəliş etdi');
+
         $role = Role::find($id);
         $role->name = $request->role;
         $role->save();
 
         $permissions = Permission::whereIn('id', $request->permission)->pluck('name')->toArray();
         $role->syncPermissions($permissions);
+
+
 
         return redirect()->route('roles.index');
 
@@ -83,7 +92,12 @@ class RolesController extends Controller
      */
     public function destroy(string $id)
     {
+
+
         $role = Role::find($id);
+
+        (new LogsController())->create_logs(Auth::user()->name_surname. ' ' . $role->name .' adlı proqram dilini sistemdən sildi');
+
         $role->revokePermissionTo($role->permissions);
         $role->users()->detach();
         $role->delete();

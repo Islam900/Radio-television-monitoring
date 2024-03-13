@@ -65,5 +65,7 @@ Route::middleware(['auth', 'is_admin:admin'])->group(function (){
 
     Route::resource('stations-users', \App\Http\Controllers\Admin\StationsUsersController::class);
 
+    Route::get('logs', [\App\Http\Controllers\Admin\DashboardController::class, 'logs'])->name('logs');
+
     Route::resource('roles', \App\Http\Controllers\Admin\RolesController::class);
 });

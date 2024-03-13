@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\LogsController;
+use App\Models\Logs;
 use App\Models\ProgramNames;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 
@@ -39,6 +42,8 @@ class ProgramNamesController extends Controller
 
         ProgramNames::create($request->all());
 
+        (new LogsController())->create_logs(Auth::user()->name_surname. ' ' . $request->name .' adlı proqram adını sistemə daxil etdi');
+
         return redirect()->route('program-names.index')
             ->with('store_success', 'Məlumatlar müvəffəqiyyətlə əlavə edildi');
     }
@@ -67,6 +72,7 @@ class ProgramNamesController extends Controller
         }
 
         $program_name->update($request->all());
+        (new LogsController())->create_logs(Auth::user()->name_surname. ' ' . $request->name .' adlı proqram adı məlumatlarını dəyişdirdi');
 
         return redirect()->route('program-names.index')
             ->with('store_success', 'Məlumatlar müvəffəqiyyətlə yeniləndi');
@@ -74,6 +80,7 @@ class ProgramNamesController extends Controller
 
     public function destroy(ProgramNames $program_name)
     {
+        (new LogsController())->create_logs(Auth::user()->name_surname. ' ' . $program_name->name .' adlı proqram adın sistemdən sildi');
         $program_name->delete();
 
         return redirect()->route('program-names.index')

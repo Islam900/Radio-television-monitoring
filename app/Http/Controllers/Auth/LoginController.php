@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\LogsController;
+use App\Models\Logs;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -43,13 +45,17 @@ class LoginController extends Controller
     {
         return view('auth.login');
     }
-
     public function login(Request $request)
     {
+
+
         $credentials = $request->only('email', 'password');
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
             if ($user->activity_status == 1) {
+
+                (new LogsController())->create_logs($user->name_surname . ' sistemə giriş etdi.');
+
                 if ($user->type == 'user') {
                     if ($user->stations->status == 0) {
                         Auth::logout();
@@ -60,6 +66,7 @@ class LoginController extends Controller
                     return redirect()->route('dashboard')->with('login_success', 'Sistemə daxil oldunuz');
                 }
             } else {
+
                 Auth::logout();
                 return redirect()->back()->with('login_error', 'Sistemə girişiniz mərkəz tərəfindən ' . $user->ban_start_date . ' tarixdən ' . $user->ban_end_date . ' tarixədək məhdudlaşdırılıb.');
             }
@@ -67,11 +74,11 @@ class LoginController extends Controller
         return redirect()->back()->withInput(request()->only('email'))->with('login_error', 'Daxil etdiyiniz məlumatlar doğru deyil');
 
     }
-
     public function logout(Request $request)
     {
+
+        (new LogsController())->create_logs(Auth::user()->name_surname . ' sistemdən çıxış etdi.');
         Auth::logout();
         return redirect('/');
     }
-
 }

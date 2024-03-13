@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\LogsController;
+use App\Models\Logs;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Role;
 
 class SystemUsersController extends Controller
@@ -46,6 +49,8 @@ class SystemUsersController extends Controller
         ]);
         $role = Role::find($request->role);
         $user->assignRole($role);
+        (new LogsController())->create_logs(Auth::user()->name_surname. ' ' . $user->name_surname . ' adlı sistem istifadəçisi yaratdı.');
+
         return redirect()->route('system-users.index')->with('store_success', 'Məlumatlar daxil edildi');
     }
     public function ban_user(Request $request)
@@ -55,6 +60,8 @@ class SystemUsersController extends Controller
         $user->ban_start_date = Carbon::now()->format('Y-m-d');
         $user->ban_end_date = $request->ban_end_date;
         $user->save();
+
+        (new LogsController())->create_logs(Auth::user()->name_surname. ' ' . $user->name_surname . ' adlı sistem istifadəçisinin girişini məhdudlaşdırdı.');
 
         return response()->json([
             'message' => 'İstifadəçisinin sistemə girişi '. $request->ban_end_date .' tarixinədək məhdudlaşdırıldı.',
@@ -70,6 +77,8 @@ class SystemUsersController extends Controller
         $user->ban_start_date = NULL;
         $user->ban_end_date = NULL;
         $user->save();
+
+        (new LogsController())->create_logs(Auth::user()->name_surname. ' ' . $user->name_surname . ' adlı sistem istifadəçisinin məhdudiyyətini aradan qaldırdı.');
 
         return response()->json([
             'message' => 'İstifadəçisinin sistemə girişi bərpa edildi',
@@ -126,6 +135,8 @@ class SystemUsersController extends Controller
             $user->syncRoles($role);
         }
 
+        (new LogsController())->create_logs(Auth::user()->name_surname. ' ' . $user->name_surname . ' adlı sistem istifadəçisinin məlumatlarını dəyişdirdi.');
+
         return redirect()->route('system-users.index')->with('update_success', 'Məlumatlar müvəffəqiyyətlə dəyişdirildi');
 
     }
@@ -137,6 +148,9 @@ class SystemUsersController extends Controller
     {
 
         $user = User::find($id);
+
+        (new LogsController())->create_logs(Auth::user()->name_surname. ' ' . $user->name_surname . ' adlı sistem istifadəçisi sistemdən sildi.');
+
         $user->permissions()->detach();
         $user->roles()->detach();
         $user->delete();

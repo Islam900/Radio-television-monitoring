@@ -3,15 +3,18 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\LogsController;
 use App\Models\Directions;
 use App\Models\Frequencies;
 use App\Models\FrequenciesStations;
+use App\Models\Logs;
 use App\Models\Polarizations;
 use App\Models\ProgramLanguages;
 use App\Models\ProgramLocations;
 use App\Models\ProgramNames;
 use App\Models\Stations;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 
@@ -46,6 +49,8 @@ class FrequenciesController extends Controller
             'frequencies_id' => $frequency->id
         ]);
 
+        (new LogsController())->create_logs(  Auth::user()->name_surname. ' ' . $request->value .'  tezliyini sistemə daxil etdi');
+
         return redirect()->route('frequencies.index')
             ->with('store_success', 'Məlumatlar müvəffəqiyyətlə əlavə edildi');
     }
@@ -75,12 +80,16 @@ class FrequenciesController extends Controller
 
         $frequency->update($request->all());
 
+        (new LogsController())->create_logs(  Auth::user()->name_surname. ' ' . $frequency->value .'  tezlik məlumatlarını dəyişdirdi');
+
         return redirect()->route('frequencies.index')
             ->with('store_success', 'Məlumatlar müvəffəqiyyətlə yeniləndi');
     }
 
     public function destroy(Frequencies $frequency)
     {
+        (new LogsController())->create_logs(  Auth::user()->name_surname. ' ' . $frequency->value .' tezlik məlumatlarını sistemdən sildi');
+
         $frequency->delete();
 
         return redirect()->route('frequencies.index')
