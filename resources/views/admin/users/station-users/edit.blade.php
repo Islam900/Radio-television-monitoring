@@ -6,17 +6,17 @@
 
             <div class="d-flex justify-content-between align-items-center">
                 <h3>{{$user->name_surname}} məlumatları</h3>
-                <a href="{{route('frequencies.index')}}">
+                <a href="{{route('station-users.index')}}">
                     <button class="btn btn-danger">
                                 <span class="me-2">
                                     <i class="nav-icon i-Arrow-Back-2"></i>
                                 </span>
-                        Sistem istifadəçiləri
+                        Məntəqə istifadəçiləri
                     </button>
                 </a>
             </div>
             <hr>
-            <form method="POST" id="store-system-user-form" action="{{route('system-users.update', $user->id)}}">
+            <form method="POST" id="update-station-user-form" action="{{route('station-users.update', $user->id)}}">
                 @csrf
                 @method('PUT')
                 <div class="form-group row">
@@ -44,15 +44,10 @@
                 </div>
 
                 <div class="form-group row">
-                    <label for="role" class="col-sm-2 col-form-label">Vəzifə</label>
+                    <label for="position" class="col-sm-2 col-form-label">Vəzifə</label>
                     <div class="col-sm-10">
-                        <select id="role" required name="role"
-                                class="form-control ui fluid search dropdown create_form_dropdown">
-                            @foreach($roles as $item)
-                                <option value="{{ $item->id }}" {{$user->position == $item->name ? 'selected' : ''}}>{{ $item->name }}</option>
-                            @endforeach
-                        </select>
-                        <span class="text-danger" id="roleError"></span>
+                        <input type="text" required name="position" value="{{$user->position}}" placeholder="Vəzifə daxil edin ..." class="form-control" id="position">
+                        <span class="text-danger" id="positionError"></span>
                     </div>
                 </div>
 

@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
         $this->call(DirectionsSeeder::class);
         $this->call(ProgramLocationsSeeder::class);
         $this->call(PolarizationsSeeder::class);
-//        $this->call(FrequenciesSeeder::class);
+        $this->call(FrequenciesSeeder::class);
 
     }
 }

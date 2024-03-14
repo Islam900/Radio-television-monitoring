@@ -60,7 +60,7 @@ class ProgramNamesSeeder extends Seeder
             'Radio İmedi',
             'Yerevan FM',
             'Radio Fortuna',
-            '"Voice FM',
+            'Voice FM',
             'Sakartvelos FM',
             'Şərqi Azərbaycan',
             'Rubas',

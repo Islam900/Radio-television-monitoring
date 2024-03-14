@@ -16,6 +16,8 @@
                         <tr>
                             <th>№</th>
                             <th>Ad soyad</th>
+                            <th>Email</th>
+                            <th>Əlaqə nömrəsi</th>
                             <th>Məntəqə</th>
                             <th>Vəzifə</th>
                             <th>Aktivlik statusu</th>
@@ -27,6 +29,8 @@
                             <tr class="font-weight-bold">
                                 <td>{{ $user->id }}</td>
                                 <td>{{ $user->name_surname }}</td>
+                                <td>{{ $user->email }}</td>
+                                <td>{{ $user->contact_number }}</td>
                                 <td>{{ $user->stations->station_name }}</td>
                                 <td>
                                     @if($user->roles->isNotEmpty())

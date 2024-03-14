@@ -5,7 +5,6 @@
         <div class="card mb-3">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h3 class="text-primary">{{$station->station_name}}</h3>
-                <button class="btn btn-danger">Girişi məhdudlaşdır</button>
             </div>
             <div class="card-body">
 

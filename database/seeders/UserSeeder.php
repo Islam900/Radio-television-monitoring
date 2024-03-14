@@ -31,22 +31,6 @@ class UserSeeder extends Seeder
             'created_at'        => now(),
         ]);
 
-        //Moderator
-        $moderator = User::create([
-            'stations_id'       => NULL,
-            'name_surname'      => 'Şıxıyev Cavid Çapar',
-            'email'             => 'moderator@gmail.com',
-            'contact_number'    => null,
-            'type'              => 'admin',
-            'position'          => 'Moderator',
-            'password'          => bcrypt('123456'),
-            'activity_status'   => 1,
-            'ban_start_date'      => NULL,
-            'ban_end_date'      => NULL,
-            'email_verified_at' => now(),
-            'created_at'        => now(),
-        ]);
-
         // Mehdiabad
         User::create([
             'stations_id'       => 1,
@@ -94,7 +78,6 @@ class UserSeeder extends Seeder
         ]);
 
         // Yasamal
-
         User::create([
             'stations_id'       => 2,
             'name_surname'      => 'Mirzəyev Adəm Fazil',
@@ -140,9 +123,40 @@ class UserSeeder extends Seeder
             'created_at'        => now(),
         ]);
 
-        // Gence
+        // Gunesli
         User::create([
             'stations_id'       => 3,
+            'name_surname'      => 'Musayev Vüqar Qəzənfər oğlu',
+            'email'             => 'vugar.musayev@dri.az',
+            'contact_number'    => null,
+            'type'              => 'user',
+            'position'          => 'Müdir',
+            'password'          => bcrypt('123456'),
+            'activity_status'   => 1,
+            'ban_start_date'      => NULL,
+            'ban_end_date'      => NULL,
+            'email_verified_at' => now(),
+            'created_at'        => now(),
+        ]);
+
+        User::create([
+            'stations_id'       => 3,
+            'name_surname'      => 'Əsədzadə Fazil Mahmud oğlu',
+            'email'             => 'fazil.asadzada@dri.az',
+            'contact_number'    => null,
+            'type'              => 'user',
+            'position'          => 'Aparıcı mühəndis',
+            'password'          => bcrypt('123456'),
+            'activity_status'   => 1,
+            'ban_start_date'      => NULL,
+            'ban_end_date'      => NULL,
+            'email_verified_at' => now(),
+            'created_at'        => now(),
+        ]);
+
+        // Gence
+        User::create([
+            'stations_id'       => 4,
             'name_surname'      => 'Qəhrəmanov Fəzail Kəmail',
             'email'             => 'fazail.gahramanov@dri.az',
             'contact_number'    => null,
@@ -157,7 +171,7 @@ class UserSeeder extends Seeder
         ]);
 
         User::create([
-            'stations_id'       => 3,
+            'stations_id'       => 4,
             'name_surname'      => 'Məmmədov Ümüd İsrail',
             'email'             => 'umud.mammadov@dri.az',
             'contact_number'    => null,
@@ -172,7 +186,7 @@ class UserSeeder extends Seeder
         ]);
 
         User::create([
-            'stations_id'       => 3,
+            'stations_id'       => 4,
             'name_surname'      => 'Məmmədov Qədim Məhəmməd',
             'email'             => 'qadim.mammadov@dri.az',
             'contact_number'    => null,

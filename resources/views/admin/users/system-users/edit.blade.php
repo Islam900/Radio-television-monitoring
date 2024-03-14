@@ -6,7 +6,7 @@
 
             <div class="d-flex justify-content-between align-items-center">
                 <h3>{{$user->name_surname}} məlumatları</h3>
-                <a href="{{route('frequencies.index')}}">
+                <a href="{{route('system-users.index')}}">
                     <button class="btn btn-danger">
                                 <span class="me-2">
                                     <i class="nav-icon i-Arrow-Back-2"></i>
@@ -16,7 +16,7 @@
                 </a>
             </div>
             <hr>
-            <form method="POST" id="store-system-user-form" action="{{route('system-users.update', $user->id)}}">
+            <form method="POST" id="update-system-user-form" action="{{route('system-users.update', $user->id)}}">
                 @csrf
                 @method('PUT')
                 <div class="form-group row">

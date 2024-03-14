@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Frequencies;
 use App\Models\FrequenciesStations;
 use App\Models\ProgramNames;
+use App\Models\Stations;
 use App\Models\StationsFrequencies;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -19,31 +20,70 @@ class FrequenciesSeeder extends Seeder
     {
         $array = DB::table('radio')
             ->distinct()
-            ->select('station_id','frequency_id', 'program_name', 'direction', 'program_location', 'program_language')
-            ->get();
+            ->pluck('frequency_id')
+            ->toArray();
 
-        foreach ($array as $item) {
-            $programName = DB::table('program_names')->where('name', $item->program_name)->value('id');
-            $direction = DB::table('directions')->where('name', $item->direction)->value('id');
-            $programLocation = DB::table('program_locations')->where('name', $item->program_location)->value('id');
-            $programLanguage = DB::table('program_languages')->where('name', $item->program_language)->value('id');
-            $station_id = DB::table('stations')->where('station_name', 'LIKE',"%{$item->station_id}%")->value('id');
+            foreach ($array as $item) {
+                $programName = DB::table('program_names')
+                            ->where('name', function ($query) use ($item) {
+                                $query->from('radio')
+                                      ->select('program_name')
+                                      ->where('frequency_id', $item)
+                                      ->orderBy('id')
+                                      ->limit(1);
+                            })
+                            ->value('id');
+                $direction = DB::table('directions')->where('name', function ($query) use ($item) {
+                                $query->from('radio')
+                                      ->select('direction')
+                                      ->where('frequency_id', $item)
+                                      ->orderBy('id')
+                                      ->limit(1);
+                            })
+                            ->value('id');
 
-            $tezlik = Frequencies::create([
-                'value'               => $item->frequency_id,
-                'program_names_id'    => $programName ?? NULL,
-                'directions_id'       => $direction ?? NULL,
-                'program_locations_id'=> $programLocation ?? NULL,
-                'program_languages_id'=> $programLanguage ?? NULL,
-                'polarizations_id'    => is_int($item) ? 1 : 2,
-                'status'              => 1
-            ]);
+                $programLocation = DB::table('program_locations')->where('name', function ($query) use ($item) {
+                                        $query->from('radio')
+                                              ->select('program_location')
+                                              ->where('frequency_id', $item)
+                                              ->orderBy('id')
+                                              ->limit(1);
+                                    })
+                                    ->value('id');
 
-            FrequenciesStations::create([
-                'frequencies_id' => $tezlik->id,
-                'stations_id' => $station_id
-            ]);
+                $programLanguage = DB::table('program_languages')->where('name', function ($query) use ($item) {
+                                        $query->from('radio')
+                                              ->select('program_language')
+                                              ->where('frequency_id', $item)
+                                              ->orderBy('id')
+                                              ->limit(1);
+                                    })
+                                    ->value('id');
 
-        }
+
+                $tezlik = Frequencies::create([
+                    'value'               => $item,
+                    'program_names_id'    => $programName ?? NULL,
+                    'directions_id'       => $direction ?? NULL,
+                    'program_locations_id'=> $programLocation ?? NULL,
+                    'program_languages_id'=> $programLanguage ?? NULL,
+                    'polarizations_id'    => is_int($item) ? 1 : 2,
+                    'status'              => 1
+                ]);
+            }
+
+            $stations = Stations::all();
+
+            foreach($stations as $station)
+            {
+                $radio_frequencies = DB::table('radio')->where('station_id', $station->station_name)->get();
+                foreach ($radio_frequencies as $frequency)
+                {
+                    FrequenciesStations::create([
+                        'frequencies_id' => Frequencies::where('value', $frequency->frequency_id)->value('id'),
+                        'stations_id'    => $station->id
+                    ]);
+                }
+            }
     }
 }
