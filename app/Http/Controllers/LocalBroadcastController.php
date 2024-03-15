@@ -8,9 +8,11 @@ use App\Models\LocalBroadcasts;
 use App\Models\Logs;
 use App\Models\Notifications;
 use App\Models\Stations;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class LocalBroadcastController extends Controller
 {
@@ -88,6 +90,25 @@ class LocalBroadcastController extends Controller
         ]);
 
         (new LogsController())->create_logs(Auth::user()->name_surname. ' ' . Auth::user()->stations->station_name .' üçün yerli ölçmələrin hesabatını sistemə daxil etdi.');
+
+        $user = User::where('stations_id', $stations_id)
+            ->where('position', 'Müdir')
+            ->first();
+
+        $user_name_surname = $user->name_surname;
+        $user_email = 'chaparoglucavid@gmail.com';
+
+        $reportData = [
+            'title'             => 'Yerli ölçmələrin hesabatı',
+            'content'           => Auth::user()->stations->station_name . ' üçün ' .  Carbon::now()->format('d.m.Y') . ' tarixinə olan hesabatı sistemə daxil edilib.',
+            'localReport'       => $local,
+            'user_name_surname' => $user_name_surname
+        ];
+
+
+        Mail::send('emails.localStore', ['reportData' => $reportData], function ($message) use ($user_email) {
+            $message->to($user_email)->subject('Yerli ölçmələrin hesabatı');
+        });
 
         return response()->json([
             'title' => 'Məlumatlar sistemə daxil edildi.',
