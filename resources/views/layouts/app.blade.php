@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="{{ asset('assets/styles/vendor/pickadate/classic.date.css')}}">
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.5/dist/sweetalert2.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/semantic.min.css" integrity="sha512-KXol4x3sVoO+8ZsWPFI/r5KBVB/ssCGB5tsv2nVOKwLg33wTFP3fmnXa47FdSVIshVTgsYk/1734xSk9aFIa4A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
+    <link rel="stylesheet" href="{{ asset('assets/styles/vendor/apexcharts.css') }}">
     <style>
         .main-content-wrap {
             background-image: url({{ asset('assets/images/bg-main.png') }});
@@ -69,6 +69,13 @@
 <!-- ============ Customizer ============= -->
 
 <!-- ============ End Customizer ============= -->
+<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+
+<script src="{{ asset('assets/js/vendor/apexcharts.min.js')}}"></script>
+<script src="{{ asset('assets/js/vendor/apexAreaChart.script.min.js')}}"></script>
+
+
 <script src="{{ asset('assets/js/common-bundle-script.js')}}"></script>
 <script src="{{ asset('assets/js/vendor/echarts.min.js')}}"></script>
 <script src="{{ asset('assets/js/es5/echart.options.min.js')}}"></script>
@@ -76,23 +83,6 @@
 <script src="{{ asset('assets/js/script.js')}}"></script>
 <script src="{{ asset('assets/js/sidebar.large.script.js')}}"></script>
 <script src="{{ asset('assets/js/customizer.script.js')}}"></script>
-{{-- <script>
-    const addNewBtn = document.getElementById('addRow');
-
-    addNewBtn.addEventListener('click', function () {
-        const formsContainer = document.querySelector('.form_inputs_container');
-        const defaultForm = document.getElementById('formRow');
-        
-        const clone = defaultForm.cloneNode(true);
-        
-        const inputs = clone.querySelectorAll('input');
-        inputs.forEach(input => input.value = '');
-
-        formsContainer.appendChild(clone);
-    })
-</script> --}}
-<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
 <script src="{{ asset('assets/js/vendor/pickadate/picker.js')}}"></script>
 <script src="{{ asset('assets/js/vendor/pickadate/picker.date.js')}}"></script>
 <script src="{{ asset('assets/js/form.basic.script.js')}}"></script>

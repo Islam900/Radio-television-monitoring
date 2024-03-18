@@ -57,46 +57,56 @@
     </div>
 
     <div class="row">
-        <div class="col-lg-8 col-md-12">
+        <div class="col-lg-8 col-md-8">
             <div class="card mb-4">
-                <div class="card-header">
-                    <div class="row row-xs">
-                        <div class="col-md-5">
-                            <input type="date" class="form-control" placeholder="Başlanğıc tarixi seçin">
-                        </div>
-                        <div class="col-md-5 mt-3 mt-md-0">
-                            <input type="date" class="form-control" placeholder="Bitiş tarixi seçin">
-                        </div>
-                        <div class="col-md-2 mt-3 mt-md-0">
-                            <button class="btn btn-primary btn-block">Məlumatlara baxın</button>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card-title">TV və FM sayı</div>
+                            <div id="echartBar" style="height: 400px;"></div>
                         </div>
                     </div>
                 </div>
-                <div class="card-body">
-                    <div class="card-title">TV və FM sayı</div>
-                    <div id="echartBar" style="height: 300px;"></div>
-                </div>
             </div>
         </div>
-
-        <div class="col-lg-4 col-sm-12">
+        <div class="col-lg-4 col-md-4">
             <div class="card mb-4">
                 <div class="card-body">
-                    <div class="card-title">İstiqamətlər üzrə</div>
-                    <div id="echartPie" style="height: 300px;"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-4 col-sm-12">
-            <div class="card mb-4">
-                <div class="card-body">
-                    <div class="card-title">İstiqamətlər üzrə</div>
-                    <div id="echartPie" style="height: 300px;"></div>
+                    <div class="card-title">Tarix üzrə TV və FM sayı</div>
+                    <div id="echartPie1" style="height: 400px;"></div>
                 </div>
             </div>
         </div>
     </div>
+    <div class="row">
+        <div class="col-lg-4 col-md-4">
+            <div class="card mb-4">
+                    <div class="card-body"> 
+                        <div class="card-title">İstiqamətlər üzrə</div>
+                        <div id="basicDoughnut" style="height: 400px;"></div>     
+                    </div>
+            </div>
+        </div>
+
+        <div class=" col-md-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="card-title">Proqramın yayımlandığı yerə görə</div>
+                    <div id="echartPie2" style="height: 400px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class=" col-md-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="card-title">Proqramın yayımlandığı dillərə görə</div>
+                    <div id="basicBar-chart" style="height: 400px;"></div>
+                </div>
+            </div>
+        </div> 
+    </div>
+
 @endsection
 
 @section('js')
@@ -106,6 +116,9 @@
             var dates = [];
             var tvData = [];
             var fmData = [];
+            
+            var langValue = [];
+            var langName = [];
 
             @foreach ($foreign_measurements as $measurement)
                 dates.push("{{ $measurement['date'] }}");
@@ -113,6 +126,7 @@
                 fmData.push({{ $measurement['FM'] }});
             @endforeach
 
+      
             var echartElemBar = document.getElementById('echartBar');
             if (echartElemBar) {
                 var echartBar = echarts.init(echartElemBar);
@@ -203,6 +217,118 @@
                 });
             }
 
+            var echartElemPie1 = document.getElementById('echartPie1');
+            if (echartElemPie1) {
+                var echartPie = echarts.init(echartElemPie1);
+                echartPie.setOption({
+                    color: ['#62549c', '#7566b5', '#7d6cbb', '#8877bd', '#9181bd', '#6957af'],
+                    tooltip: {
+                        show: true,
+                        backgroundColor: 'rgba(0, 0, 0, .8)'
+                    },
+
+                    series: [{
+                        type: 'pie',
+                        radius: '60%',
+                        center: ['50%', '50%'],
+                        data: {!! json_encode($totalFrequencyDataForeign) !!},
+                        itemStyle: {
+                            emphasis: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                        }
+                    }]
+                });
+                $(window).on('resize', function() {
+                    setTimeout(function() {
+                        echartPie.resize();
+                    }, 500);
+                });
+            }
+
+
+
+            var p = document.getElementById("basicDoughnut");
+            if (p) {
+                var u = echarts.init(p);
+                u.setOption({
+                    grid: {
+                        left: "3%",
+                        right: "4%",
+                        bottom: "3%",
+                        containLabel: !0
+                    },
+                    color: ["#0d94bc","#f36e12", "#135bba", "#c13018",  "#ebcb37", "#a1b968"],
+                    tooltip: {
+                        show: !1,
+                        trigger: "item",
+                        formatter: "{a} <br/>{b}: {c} ({d}%)"
+                    },
+                    xAxis: [{
+                        axisLine: {
+                            show: !1
+                        },
+                        splitLine: {
+                            show: !1
+                        }
+                    }],
+                    yAxis: [{
+                        axisLine: {
+                            show: !1
+                        },
+                        splitLine: {
+                            show: !1
+                        }
+                    }],
+                    series: [{
+                        name: "Sessions",
+                        type: "pie",
+                        radius: ["50%", "85%"],
+                        center: ["50%", "50%"],
+                        avoidLabelOverlap: !1,
+                        hoverOffset: 5,
+                        label: {
+                            normal: {
+                                show: !1,
+                                position: "center",
+                                textStyle: {
+                                    fontSize: "13",
+                                    fontWeight: "normal"
+                                },
+                                formatter: "{a}"
+                            },
+                            emphasis: {
+                                show: !0,
+                                textStyle: {
+                                    fontSize: "15",
+                                    fontWeight: "bold"
+                                },
+                                formatter: "{b} \n{c} ({d}%)"
+                            }
+                        },
+                        labelLine: {
+                            normal: {
+                                show: !1
+                            }
+                        },
+                        data: {!! json_encode($directionsData) !!},
+                        itemStyle: {
+                            emphasis: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: "rgba(0, 0, 0, 0.5)"
+                            }
+                        }
+                    }]
+                }), $(window).on("resize", function() {
+                    setTimeout(function() {
+                        u.resize()
+                    }, 500)
+                })
+            }
+
 
             var echartElemPie = document.getElementById('echartPie');
             if (echartElemPie) {
@@ -219,7 +345,7 @@
                         type: 'pie',
                         radius: '60%',
                         center: ['50%', '50%'],
-                        data: {!! json_encode($directionsData) !!},
+                        data: {!! json_encode($totalFrequencyDataForeign) !!},
                         itemStyle: {
                             emphasis: {
                                 shadowBlur: 10,
@@ -235,6 +361,68 @@
                     }, 500);
                 });
             }
+
+
+            var echartElemPie2 = document.getElementById('echartPie2');
+            if (echartElemPie2) {
+                var echartPie = echarts.init(echartElemPie2);
+                echartPie.setOption({
+                    color: ['#62549c', '#7566b5', '#7d6cbb', '#8877bd', '#9181bd', '#6957af'],
+                    tooltip: {
+                        show: true,
+                        backgroundColor: 'rgba(0, 0, 0, .8)'
+                    },
+
+                    series: [{
+                        type: 'pie',
+                        radius: '60%',
+                        center: ['50%', '50%'],
+                        data: {!! json_encode($programLocationsData) !!},
+                        itemStyle: {
+                            emphasis: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                        }
+                    }]
+                });
+                $(window).on('resize', function() {
+                    setTimeout(function() {
+                        echartPie.resize();
+                    }, 500);
+                });
+            }
+
+
+
+            var bbar = {
+                chart: {
+                    height: 350,
+                    type: "bar",
+                    
+                },
+                plotOptions: {
+                    bar: {
+                        horizontal: true,
+                        endingShape: "rounded",
+                    }
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                series: [{
+                    data: {!! json_encode(array_column($programLanguagesData, 'value')) !!}
+                }],
+                xaxis: {
+                    categories: {!! json_encode(array_column($programLanguagesData, 'name')) !!}
+                }
+            };
+
+            new ApexCharts(document.querySelector("#basicBar-chart"), bbar).render();
+
+
+            
         })
     </script>
 @endsection
