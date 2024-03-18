@@ -33255,7 +33255,6 @@ span.ul-contact-detail__followers {
 }
 
 .ul-weather-card__img-overlay {
-    background: url(/assets/images/products/weather-2.jpg);
     background-size: cover;
     height: 400px;
     background-position-y: center;

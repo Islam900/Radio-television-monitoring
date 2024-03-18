@@ -18,72 +18,81 @@ class FrequenciesSeeder extends Seeder
      */
     public function run(): void
     {
-        $array = DB::table('radio')
-            ->distinct()
-            ->pluck('frequency_id')
-            ->toArray();
+
+
+
+        $stations = Stations::all();
+
+        foreach ($stations as $station) {
+            $array = DB::table('radio')
+                ->where('station_id', $station->station_name)
+                ->pluck('frequency_id')
+                ->toArray();
 
             foreach ($array as $item) {
-                $programName = DB::table('program_names')
-                            ->where('name', function ($query) use ($item) {
-                                $query->from('radio')
-                                      ->select('program_name')
-                                      ->where('frequency_id', $item)
-                                      ->orderBy('id')
-                                      ->limit(1);
-                            })
-                            ->value('id');
-                $direction = DB::table('directions')->where('name', function ($query) use ($item) {
-                                $query->from('radio')
-                                      ->select('direction')
-                                      ->where('frequency_id', $item)
-                                      ->orderBy('id')
-                                      ->limit(1);
-                            })
-                            ->value('id');
-
-                $programLocation = DB::table('program_locations')->where('name', function ($query) use ($item) {
-                                        $query->from('radio')
-                                              ->select('program_location')
-                                              ->where('frequency_id', $item)
-                                              ->orderBy('id')
-                                              ->limit(1);
-                                    })
-                                    ->value('id');
-
-                $programLanguage = DB::table('program_languages')->where('name', function ($query) use ($item) {
-                                        $query->from('radio')
-                                              ->select('program_language')
-                                              ->where('frequency_id', $item)
-                                              ->orderBy('id')
-                                              ->limit(1);
-                                    })
-                                    ->value('id');
-
 
                 $tezlik = Frequencies::create([
-                    'value'               => $item,
-                    'program_names_id'    => $programName ?? NULL,
-                    'directions_id'       => $direction ?? NULL,
-                    'program_locations_id'=> $programLocation ?? NULL,
-                    'program_languages_id'=> $programLanguage ?? NULL,
-                    'polarizations_id'    => is_int($item) ? 1 : 2,
-                    'status'              => 1
+                    'value' => $item,
+                    'program_names_id' => NULL,
+                    'directions_id' => NULL,
+                    'program_locations_id' => NULL,
+                    'program_languages_id' => NULL,
+                    'polarizations_id' => $item <= 60 ? 1 : 2,
+                    'status' => 1
                 ]);
-            }
 
-            $stations = Stations::all();
+                $ff = FrequenciesStations::create([
+                    'frequencies_id' => $tezlik->id,
+                    'stations_id' => $station->id
+                ]);
 
-            foreach($stations as $station)
-            {
-                $radio_frequencies = DB::table('radio')->where('station_id', $station->station_name)->get();
-                foreach ($radio_frequencies as $frequency)
-                {
-                    FrequenciesStations::create([
-                        'frequencies_id' => Frequencies::where('value', $frequency->frequency_id)->value('id'),
-                        'stations_id'    => $station->id
-                    ]);
-                }
+                $programName = DB::table('program_names')
+                    ->where('name', function ($query) use ($item, $station) {
+                        $query->from('radio')
+                            ->select('program_name')
+                            ->where('frequency_id', $item)
+                            ->where('station_id', $station->station_name)
+                            ->orderBy('id')
+                            ->limit(1);
+                    })
+                    ->value('id');
+
+                $direction = DB::table('directions')->where('name', function ($query) use ($item, $station) {
+                    $query->from('radio')
+                        ->select('direction')
+                        ->where('frequency_id', $item)
+                        ->where('station_id', $station->station_name)
+                        ->orderBy('id')
+                        ->limit(1);
+                })
+                    ->value('id');
+
+                $programLocation = DB::table('program_locations')->where('name', function ($query) use ($item, $station) {
+                    $query->from('radio')
+                        ->select('program_location')
+                        ->where('frequency_id', $item)
+                        ->where('station_id', $station->station_name)
+                        ->orderBy('id')
+                        ->limit(1);
+                })
+                    ->value('id');
+
+                $programLanguage = DB::table('program_languages')->where('name', function ($query) use ($item, $station) {
+                    $query->from('radio')
+                        ->select('program_language')
+                        ->where('frequency_id', $item)
+                        ->where('station_id', $station->station_name)
+                        ->orderBy('id')
+                        ->limit(1);
+                })
+                    ->value('id');
+
+                $tezlik->program_names_id = $programName ?? NULL;
+                $tezlik->directions_id = $direction ?? NULL;
+                $tezlik->program_locations_id = $programLocation ?? NULL;
+                $tezlik->program_languages_id = $programLanguage ?? NULL;
+                $tezlik->save();
             }
+        }
     }
 }

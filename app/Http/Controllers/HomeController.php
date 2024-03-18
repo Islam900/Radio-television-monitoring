@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Frequencies;
+use App\Models\FrequenciesStations;
 use App\Models\LocalBroadcasts;
 use App\Models\Logs;
+use App\Models\ProgramLocations;
 use App\Models\Stations;
 use App\Models\User;
 use Carbon\Carbon;
@@ -33,9 +35,96 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $emfs_level = Auth::user()->stations->local_broadcasts()->whereBetween('report_date', [now()->subDays(30), now()])->pluck('emfs_level')->toArray();
-        return view('home', compact('emfs_level'));
+        $station = Auth::user()->stations;
+
+        //yerli və kənar yayım hesabatları - tezlikləri ilə birlikdə
+        $local_broadcasts = $station->local_broadcasts()->with('frequencies');
+        $foreign_broadcasts = $station->foreign_broadcasts()->with('frequencies');
+
+        //yerli tv sayı
+        $local_tv_count = $station->local_broadcasts()
+            ->whereHas('frequencies', function ($query) {
+                $query->where('value', '<', 61);
+            })
+            ->count();
+
+        //yerli fm sayi
+        $local_fm_count = $station->local_broadcasts()
+            ->whereHas('frequencies', function ($query) {
+                $query->where('value', '>', 60);
+            })
+            ->count();
+
+
+        //kenar tv sayi
+        $foreign_tv_count = $station->foreign_broadcasts()
+            ->whereHas('frequencies', function ($query) {
+                $query->where('value', '<', 61);
+            })
+            ->count();
+
+        //kenar fm sayi
+        $foreign_fm_count = $station->foreign_broadcasts()
+            ->whereHas('frequencies', function ($query) {
+                $query->where('value', '>', 60);
+            })
+            ->count();
+
+        $station_max_frequency_count = $station->frequencies->count();
+
+        //kənar hesabatların istiqamətləri sayı
+        $foreign_direction_counts = $foreign_broadcasts->join('directions', 'foreign_broadcasts.directions_id', '=', 'directions.id')
+            ->select('directions.name as name', \DB::raw('count(*) as value'))
+            ->groupBy('directions_id', 'directions.name')
+            ->get()
+            ->toArray();
+
+        $directionsData = [];
+        foreach ($foreign_direction_counts as $item) {
+            $directionsData[] = [
+                'value' => $item['value'],
+                'name' => $item['name']
+            ];
+        }
+
+        $directionsDataEncoded = $directionsData;
+
+        //kənar hesabatlarda proqramın yayımlandığı yerlərin sayı
+        $foreign_locations_counts = $foreign_broadcasts->join('program_locations', 'foreign_broadcasts.program_locations_id', '=', 'program_locations.id')
+            ->select('program_locations_id', 'program_locations.name', \DB::raw('count(*) as count'))
+            ->groupBy('program_locations_id', 'program_locations.name')
+            ->get()
+            ->toArray();
+
+        //programnın yayımlandığı dillərin sayı
+        $foreign_languages_counts = $foreign_broadcasts->join('program_languages', 'foreign_broadcasts.program_languages_id', '=', 'program_languages.id')
+            ->select('program_languages_id', 'program_languages.name', \DB::raw('count(*) as count'))
+            ->groupBy('program_languages_id', 'program_languages.name')
+            ->get()
+            ->toArray();
+
+        //kənar hesabatlarda qəbul keyfiyyətinə görə qruplaşdırma və say
+        $response_quality_counts = $foreign_broadcasts
+            ->selectRaw('response_quality, count(*) as count')
+            ->groupBy('response_quality')
+            ->pluck('count', 'response_quality');
+
+        return view(
+            'home',
+            compact(
+                'local_tv_count',
+                'local_fm_count',
+                'foreign_tv_count',
+                'foreign_fm_count',
+                'directionsDataEncoded',
+                'foreign_locations_counts',
+                'foreign_languages_counts',
+                'response_quality_counts',
+                'station_max_frequency_count'
+            )
+        );
     }
+
 
     public function station_profile()
     {
@@ -52,7 +141,7 @@ class HomeController extends Controller
 
     public function update_station_profile(Request $request, $id)
     {
-        (new LogsController())->create_logs(Auth::user()->name_surname. ' hesab məlumatlarında düzəliş etdi.');
+        (new LogsController())->create_logs(Auth::user()->name_surname . ' hesab məlumatlarında düzəliş etdi.');
 
         $validator = Validator::make($request->all(), [
             'name_surname' => 'required|string',
@@ -69,19 +158,14 @@ class HomeController extends Controller
         $data = $request->all();
 
         $user = User::find($id);
-        if($request->password)
-        {
-            if(bcrypt($request->new_password) == Auth::user()->password)
-            {
+        if ($request->password) {
+            if (bcrypt($request->new_password) == Auth::user()->password) {
                 return redirect()->route('station-profile')
                     ->with('error', 'Daxil etdiyiniz yeni şifrə mövcud şifrə ilə eynidir!');
-            }
-        elseif(bcrypt($request->password) != Auth::user()->password)
-            {
+            } elseif (bcrypt($request->password) != Auth::user()->password) {
                 return redirect()->route('station-profile')
                     ->with('error', 'Mövcud şifrəni düzgün daxil etməmisiniz!');
-            }
-        else {
+            } else {
                 $data['password'] = bcrypt($request->new_password);
             }
             $user->password = $data['password'];

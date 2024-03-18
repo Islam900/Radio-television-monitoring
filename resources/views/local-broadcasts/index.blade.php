@@ -117,7 +117,7 @@
                 "pagingType": 'full_numbers',
                 "language": {
                     "zeroRecords": "Axtarışınıza uyğun nəticə tapılmadı...",
-                    "emptyTable": "İdxala icazə üçün heç bir müraciət yaradılmayıb...",
+                    "emptyTable": "Məlumat daxil edilməyib...",
                     "paginate": {
                         "next": ">",
                         "previous": "<",    

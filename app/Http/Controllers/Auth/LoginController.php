@@ -23,7 +23,7 @@ class LoginController extends Controller
     |
     */
 
-//    use AuthenticatesUsers;
+    //    use AuthenticatesUsers;
 
     /**
      * Where to redirect users after login.
@@ -61,7 +61,7 @@ class LoginController extends Controller
                         Auth::logout();
                         return redirect()->back()->with('login_error', 'Məntəqənin sistemə girişi mərkəz tərəfindən məhdudlaşdırılıb.');
                     }
-                    return redirect()->route('local-broadcasts.index')->with('login_success', 'Sistemə daxil oldunuz');
+                    return redirect()->route('home')->with('login_success', 'Sistemə daxil oldunuz');
                 } elseif ($user->type == 'admin') {
                     return redirect()->route('dashboard')->with('login_success', 'Sistemə daxil oldunuz');
                 }

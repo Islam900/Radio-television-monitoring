@@ -34,7 +34,7 @@ class ForeignBroadcastController extends Controller
         $frequencies = $station->frequencies()->distinct()->get();
         $devices = config('data.devices');
         $options = config('data.options');
-        return view('foreign-broadcasts.create', compact('frequencies',  'devices', 'options'));
+        return view('foreign-broadcasts.create', compact('frequencies', 'devices', 'options'));
     }
 
     /**
@@ -71,6 +71,7 @@ class ForeignBroadcastController extends Controller
                 'program_names_id' => $request->program_names_id[$key],
                 'directions_id' => $request->directions_id[$key],
                 'program_languages_id' => $request->program_languages_id[$key],
+                'program_locations_id' => $request->program_locations_id[$key],
                 'emfs_level_in' => $request->emfs_level_in[$key],
                 'emfs_level_out' => $request->emfs_level_out[$key] ?? NULL,
                 'response_direction_in' => $request->response_direction_in[$key],
@@ -88,12 +89,12 @@ class ForeignBroadcastController extends Controller
             'sender' => Auth::user()->stations->station_name,
             'receiver' => 'admin',
             'lr_id' => $foreign->id,
-            'content' => $submitDate.' tarixi üçün '.Auth::user()->stations->station_name.' tərəfindən kənar ölçmələrin hesabatı sistemə daxil olundu.',
+            'content' => $submitDate . ' tarixi üçün ' . Auth::user()->stations->station_name . ' tərəfindən kənar ölçmələrin hesabatı sistemə daxil olundu.',
             's_read' => 0,
             'r_read' => 0,
         ]);
 
-        (new LogsController())->create_logs(Auth::user()->name_surname. ' ' . Auth::user()->stations->station_name .' üçün kənar ölçmələrin gündəlik hesabatını sistemə daxil etdi.');
+        (new LogsController())->create_logs(Auth::user()->name_surname . ' ' . Auth::user()->stations->station_name . ' üçün kənar ölçmələrin gündəlik hesabatını sistemə daxil etdi.');
 
         return response()->json([
             'title' => 'Məlumatlar sistemə daxil edildi.',
@@ -127,7 +128,7 @@ class ForeignBroadcastController extends Controller
 
         $devices = config('data.devices');
         $options = config('data.options');
-        return view('foreign-broadcasts.edit', compact('foreignBroadcast', 'frequencies', 'polarizations' ,'program_locations', 'program_languages', 'program_names', 'directions', 'devices', 'options'));
+        return view('foreign-broadcasts.edit', compact('foreignBroadcast', 'frequencies', 'polarizations', 'program_locations', 'program_languages', 'program_names', 'directions', 'devices', 'options'));
     }
 
     /**
@@ -147,9 +148,7 @@ class ForeignBroadcastController extends Controller
                 'stations_id' => Auth::user()->stations_id
             ]);
             $data['frequencies_id'] = $frequency->id;
-        }
-        else
-        {
+        } else {
             $data['frequencies_id'] = Frequencies::where('value', $request->frequencies_id)->first()->id;
         }
         $data['device'] = implode(',', array_keys($request->device));
@@ -165,12 +164,12 @@ class ForeignBroadcastController extends Controller
             'sender' => Auth::user()->stations->station_name,
             'receiver' => 'admin',
             'lr_id' => $foreignBroadcast->id,
-            'content' => $foreignBroadcast->report_date.' tarixi üçün '.Auth::user()->stations->station_name.' tərəfindən daxil edilən kənar ölçmələrin hesabatı düzəliş edildikdən sonra təsdiq üçün göndərildi.',
+            'content' => $foreignBroadcast->report_date . ' tarixi üçün ' . Auth::user()->stations->station_name . ' tərəfindən daxil edilən kənar ölçmələrin hesabatı düzəliş edildikdən sonra təsdiq üçün göndərildi.',
             's_read' => 0,
             'r_read' => 0,
         ]);
 
-        (new LogsController())->create_logs(Auth::user()->name_surname. ' ' . Auth::user()->stations->station_name .' üçün verilən '. $foreignBroadcast->report_number .' nömrəli ölçmələrin gündəlik hesabatında düzəliş etdi.');
+        (new LogsController())->create_logs(Auth::user()->name_surname . ' ' . Auth::user()->stations->station_name . ' üçün verilən ' . $foreignBroadcast->report_number . ' nömrəli ölçmələrin gündəlik hesabatında düzəliş etdi.');
 
         return response()->json([
             'message' => 'Məlumatlar yenilənib təsdiq üçün göndərildi.',

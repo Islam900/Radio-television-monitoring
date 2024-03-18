@@ -30,8 +30,8 @@ Route::get('/login', [\App\Http\Controllers\Auth\LoginController::class, 'showLo
 Route::post('/login', [\App\Http\Controllers\Auth\LoginController::class, 'login'])->name('post-login');
 Route::post('/logout', [\App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
 
-Route::middleware(['auth', 'is_admin:user'])->group(function (){
-//    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::middleware(['auth', 'is_admin:user'])->group(function () {
+    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
     Route::get('station-profile', [\App\Http\Controllers\HomeController::class, 'station_profile'])->name('station-profile');
     Route::put('update-station-profile/{id}', [\App\Http\Controllers\HomeController::class, 'update_station_profile'])->name('update-station-profile');
     Route::resource('/local-broadcasts', \App\Http\Controllers\LocalBroadcastController::class);
@@ -41,7 +41,7 @@ Route::middleware(['auth', 'is_admin:user'])->group(function (){
 });
 
 
-Route::middleware(['auth', 'is_admin:admin'])->group(function (){
+Route::middleware(['auth', 'is_admin:admin'])->group(function () {
     Route::get('dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'dashboard'])->name('dashboard');
     Route::get('all-stations', [\App\Http\Controllers\Admin\StationsController::class, 'all_stations'])->name('stations.all-stations');
     Route::get('stations/{id}/show', [\App\Http\Controllers\Admin\StationsController::class, 'show'])->name('stations.show');
