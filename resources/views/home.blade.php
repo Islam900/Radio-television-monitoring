@@ -50,7 +50,7 @@
                             </div>
                         </div>
                     </div>
-    
+
                 </div>
             </div>
         </div>
@@ -59,13 +59,35 @@
     <div class="row">
         <div class="col-lg-8 col-md-12">
             <div class="card mb-4">
+                <div class="card-header">
+                    <div class="row row-xs">
+                        <div class="col-md-5">
+                            <input type="date" class="form-control" placeholder="Başlanğıc tarixi seçin">
+                        </div>
+                        <div class="col-md-5 mt-3 mt-md-0">
+                            <input type="date" class="form-control" placeholder="Bitiş tarixi seçin">
+                        </div>
+                        <div class="col-md-2 mt-3 mt-md-0">
+                            <button class="btn btn-primary btn-block">Məlumatlara baxın</button>
+                        </div>
+                    </div>
+                </div>
                 <div class="card-body">
                     <div class="card-title">TV və FM sayı</div>
                     <div id="echartBar" style="height: 300px;"></div>
                 </div>
             </div>
         </div>
-        
+
+        <div class="col-lg-4 col-sm-12">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="card-title">İstiqamətlər üzrə</div>
+                    <div id="echartPie" style="height: 300px;"></div>
+                </div>
+            </div>
+        </div>
+
         <div class="col-lg-4 col-sm-12">
             <div class="card mb-4">
                 <div class="card-body">
@@ -79,7 +101,18 @@
 
 @section('js')
     <script>
-        $(document).ready(function(){
+        $(document).ready(function() {
+
+            var dates = [];
+            var tvData = [];
+            var fmData = [];
+
+            @foreach ($foreign_measurements as $measurement)
+                dates.push("{{ $measurement['date'] }}");
+                tvData.push({{ $measurement['TV'] }});
+                fmData.push({{ $measurement['FM'] }});
+            @endforeach
+
             var echartElemBar = document.getElementById('echartBar');
             if (echartElemBar) {
                 var echartBar = echarts.init(echartElemBar);
@@ -102,7 +135,7 @@
                     },
                     xAxis: [{
                         type: 'category',
-                        data: ['Yanvar', 'Fevral','Mart','Aprel','May','İyun','İyul','Avqust','Sentyabr','Oktyabr','Noyabr','Dekabr'],
+                        data: dates,
                         axisTick: {
                             alignWithLabel: true
                         },
@@ -120,7 +153,7 @@
                         },
                         min: 0,
                         max: {{ $station_max_frequency_count }},
-                        interval: 2,
+                        interval: 1,
                         axisLine: {
                             show: false
                         },
@@ -132,7 +165,7 @@
 
                     series: [{
                         name: 'TV',
-                        data: [{{$foreign_tv_count}}],
+                        data: tvData,
                         label: { show: false, color: '#0168c1' },
                         type: 'bar',
                         barGap: 0,
@@ -148,7 +181,7 @@
                         }
                     }, {
                         name: 'FM',
-                        data: [{{$foreign_fm_count}}],
+                        data:  fmData,
                         label: { show: false, color: '#639' },
                         type: 'bar',
                         color: '#7569b3',
@@ -170,38 +203,38 @@
                 });
             }
 
+
             var echartElemPie = document.getElementById('echartPie');
-        if (echartElemPie) {
-            var echartPie = echarts.init(echartElemPie);
-            echartPie.setOption({
-                color: ['#62549c', '#7566b5', '#7d6cbb', '#8877bd', '#9181bd', '#6957af'],
-                tooltip: {
-                    show: true,
-                    backgroundColor: 'rgba(0, 0, 0, .8)'
-                },
+            if (echartElemPie) {
+                var echartPie = echarts.init(echartElemPie);
+                echartPie.setOption({
+                    color: ['#62549c', '#7566b5', '#7d6cbb', '#8877bd', '#9181bd', '#6957af'],
+                    tooltip: {
+                        show: true,
+                        backgroundColor: 'rgba(0, 0, 0, .8)'
+                    },
 
-                series: [{
-                    name: 'İstiqamət üzrə',
-                    type: 'pie',
-                    radius: '60%',
-                    center: ['50%', '50%'],
-                    data: {!! json_encode($directionsDataEncoded) !!},
-                    itemStyle: {
-                        emphasis: {
-                            shadowBlur: 10,
-                            shadowOffsetX: 0,
-                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    series: [{
+                        name: 'İstiqamət üzrə',
+                        type: 'pie',
+                        radius: '60%',
+                        center: ['50%', '50%'],
+                        data: {!! json_encode($directionsData) !!},
+                        itemStyle: {
+                            emphasis: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
                         }
-                    }
-                }]
-            });
-            $(window).on('resize', function () {
-                setTimeout(function () {
-                    echartPie.resize();
-                }, 500);
-            });
-        }
+                    }]
+                });
+                $(window).on('resize', function() {
+                    setTimeout(function() {
+                        echartPie.resize();
+                    }, 500);
+                });
+            }
         })
-
     </script>
 @endsection

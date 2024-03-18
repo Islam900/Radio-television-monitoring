@@ -1,6 +1,6 @@
 <div class="main-header">
     <div class="logo">
-        <a href="{{route('local-broadcasts.index')}}">
+        <a href="{{route('home')}}">
             <img src="{{ asset('assets/images/logo.png')}}" alt="" class="main-logo">
         </a>
     </div>

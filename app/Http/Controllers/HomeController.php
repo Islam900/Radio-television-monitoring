@@ -35,40 +35,59 @@ class HomeController extends Controller
      */
     public function index()
     {
+        $now = Carbon::now();
+        $oneMonthBefore = $now->copy()->subWeek();
+        $daysInRange = Carbon::parse($oneMonthBefore)->daysUntil($now);
+
+        $days_array = [];
+        foreach ($daysInRange as $key => $value) {
+            $days_array[] = $value->toDateString();
+        }
+
+
         $station = Auth::user()->stations;
 
         //yerli və kənar yayım hesabatları - tezlikləri ilə birlikdə
         $local_broadcasts = $station->local_broadcasts()->with('frequencies');
         $foreign_broadcasts = $station->foreign_broadcasts()->with('frequencies');
 
-        //yerli tv sayı
-        $local_tv_count = $station->local_broadcasts()
-            ->whereHas('frequencies', function ($query) {
-                $query->where('value', '<', 61);
-            })
-            ->count();
-
-        //yerli fm sayi
-        $local_fm_count = $station->local_broadcasts()
-            ->whereHas('frequencies', function ($query) {
-                $query->where('value', '>', 60);
-            })
-            ->count();
-
+        $local_measurements = [];
+        $foreign_measurements = [];
 
         //kenar tv sayi
-        $foreign_tv_count = $station->foreign_broadcasts()
-            ->whereHas('frequencies', function ($query) {
-                $query->where('value', '<', 61);
-            })
-            ->count();
+        
 
-        //kenar fm sayi
-        $foreign_fm_count = $station->foreign_broadcasts()
-            ->whereHas('frequencies', function ($query) {
-                $query->where('value', '>', 60);
-            })
-            ->count();
+        foreach ($daysInRange as $key => $value) {
+            $local_measurements[] = [
+                'date' => $value->toDateString(),
+                'TV' => $station->local_broadcasts()
+                            ->whereHas('frequencies', function ($query) {
+                                $query->where('value', '<', 61);
+                            })->where('report_date', $value->toDateString())
+                            ->count(),
+                'FM' => $station->local_broadcasts()
+                            ->whereHas('frequencies', function ($query) {
+                                $query->where('value', '>', 60);
+                            })->where('report_date', $value->toDateString())
+                            ->count()
+            ];
+        
+            $foreign_measurements[] = [
+                'date' => $value->toDateString(),
+                'TV' => $station->foreign_broadcasts()
+                            ->whereHas('frequencies', function ($query) {
+                                $query->where('value', '<', 61);
+                            })->where('report_date', $value->toDateString())
+                            ->count(),
+                'FM' => $station->foreign_broadcasts()
+                            ->whereHas('frequencies', function ($query) {
+                                $query->where('value', '>', 60);
+                            })->where('report_date', $value->toDateString())
+                            ->count()
+            ];
+        }
+
+        // dd($foreign_measurements);
 
         $station_max_frequency_count = $station->frequencies->count();
 
@@ -86,8 +105,6 @@ class HomeController extends Controller
                 'name' => $item['name']
             ];
         }
-
-        $directionsDataEncoded = $directionsData;
 
         //kənar hesabatlarda proqramın yayımlandığı yerlərin sayı
         $foreign_locations_counts = $foreign_broadcasts->join('program_locations', 'foreign_broadcasts.program_locations_id', '=', 'program_locations.id')
@@ -112,11 +129,10 @@ class HomeController extends Controller
         return view(
             'home',
             compact(
-                'local_tv_count',
-                'local_fm_count',
-                'foreign_tv_count',
-                'foreign_fm_count',
-                'directionsDataEncoded',
+                'days_array',
+                'local_measurements',
+                'foreign_measurements',
+                'directionsData',
                 'foreign_locations_counts',
                 'foreign_languages_counts',
                 'response_quality_counts',
