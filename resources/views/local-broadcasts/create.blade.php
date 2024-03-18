@@ -258,8 +258,8 @@
                     const id = e.target.id;
                     let lastChar = '';
                     if(id && id.length > 0) {
-                        const char = Number(id.charAt(id.length - 1));
-                        if(!isNaN(char)){
+                        const char = Number(id.substring(16, id.length));
+                        if(char > 0){
                             lastChar = char;
                         }
                     }
