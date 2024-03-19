@@ -57,6 +57,92 @@
     </div>
 
     <div class="row">
+                <div class="col-md-3">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h4 class="mb-2 text-muted">Vurulur</h4>
+                                <p class="mb-1 text-22 font-weight-light">{{ $response_quality_counts['Vurulur'] }}</p>
+                            </div>
+                            @php 
+                                $vurulur_percent = $response_quality_counts['Vurulur'] * 100 / Auth::user()->stations->foreign_broadcasts->count() ;
+                            @endphp
+                            <div class="progress mb-1" style="height: 30px">
+                                <div class="progress-bar bg-default" style="width: {{ round($vurulur_percent, 0,2) }}%; font-size:16px;" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                {{ round($vurulur_percent, 0,2) }}%
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">Məlumatlar son 1 hətfəyə nəzərən hesablanıb</small>
+                            <small class="text-danger">{{$periodik_say}} periodik / {{$daimi_say}} daimi</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h4 class="mb-2 text-muted">Yaxşı</h4>
+                                <p class="mb-1 text-22 font-weight-light">{{ $response_quality_counts['Yaxşı'] }}</p>
+                            </div>
+                            @php 
+                                $yaxsi_persent = $response_quality_counts['Yaxşı'] * 100 / Auth::user()->stations->foreign_broadcasts->count() ;
+                            @endphp
+                            <div class="progress mb-1" style="height: 30px">
+                                <div class="progress-bar bg-success" style="width: {{ round($yaxsi_persent, 0,2) }}%; font-size:16px;" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                    {{ round($yaxsi_persent, 0,2) }}%    
+                                </div>
+                            </div>
+                            <small class="text-muted">Məlumatlar son 1 hətfəyə nəzərən hesablanıb</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h4 class="mb-2 text-muted">Kafi</h4>
+                                <p class="mb-1 text-22 font-weight-light">{{ $response_quality_counts['Kafi'] }}</p>
+                            </div>
+                            @php 
+                                $kafi_persent = $response_quality_counts['Kafi'] * 100 / Auth::user()->stations->foreign_broadcasts->count() ;
+                            @endphp
+                            <div class="progress mb-1" style="height: 30px">
+                                <div class="progress-bar bg-warning" style="width: {{ round($kafi_persent, 0,2) }}%; font-size:16px;" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                    {{ round($kafi_persent, 0,2) }}%    
+                                </div>
+                            </div>
+                            <small class="text-muted">Məlumatlar son 1 hətfəyə nəzərən hesablanıb</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h4 class="mb-2 text-muted">Zəif</h4>
+                                <p class="mb-1 text-22 font-weight-light">{{ $response_quality_counts['Zəif'] }}</p>
+                            </div>
+                            @php 
+                                $zeif_persent = $response_quality_counts['Zəif'] * 100 / Auth::user()->stations->foreign_broadcasts->count();
+                            @endphp
+                            <div class="progress mb-1" style="height: 30px">
+                                <div class="progress-bar bg-danger" style="width: {{ round($zeif_persent, 0,2) }}%; font-size:16px;" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                    {{ round($zeif_persent, 0,2) }}%    
+                                </div>
+                            </div>
+                            <small class="text-muted">Məlumatlar son 1 hətfəyə nəzərən hesablanıb</small>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+    <div class="row">
         <div class="col-lg-8 col-md-8">
             <div class="card mb-4">
                 <div class="card-body">
@@ -107,6 +193,18 @@
         </div> 
     </div>
 
+    <div class="row">
+        <div class="col-lg-12 col-md-12">
+            <div class="card mb-4">
+                <div class="card-body"> 
+                    <div class="card-title">Tezliklərə görə (Elektromaqnit sahə gərginliyinin səviyyəsi)</div>
+                    <div id="basicLine-chart"></div>    
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 @endsection
 
 @section('js')
@@ -120,11 +218,22 @@
             var langValue = [];
             var langName = [];
 
+            var emfs_in = [];
+            var emfs_out = [];
+            var emfs_report_date = [];
+
             @foreach ($foreign_measurements as $measurement)
                 dates.push("{{ $measurement['date'] }}");
                 tvData.push({{ $measurement['TV'] }});
                 fmData.push({{ $measurement['FM'] }});
             @endforeach
+
+            @foreach ($emfs as $emfs_level)
+                emfs_in.push({{ $emfs_level['in'] }});
+                emfs_out.push({{ $emfs_level['out'] }});
+                emfs_report_date.push("{{ $emfs_level['report_date'] }}");
+            @endforeach
+
 
       
             var echartElemBar = document.getElementById('echartBar');
@@ -145,7 +254,6 @@
                     },
                     tooltip: {
                         show: true,
-                        backgroundColor: 'rgba(0, 0, 0, .8)'
                     },
                     xAxis: [{
                         type: 'category',
@@ -166,7 +274,7 @@
                             formatter: '{value}'
                         },
                         min: 0,
-                        max: {{ $station_max_frequency_count }},
+                        max: {{ Auth::user()->stations->foreign_broadcasts->count() }},
                         interval: 1,
                         axisLine: {
                             show: false
@@ -223,7 +331,7 @@
                 echartPie.setOption({
                     color: ['#62549c', '#7566b5', '#7d6cbb', '#8877bd', '#9181bd', '#6957af'],
                     tooltip: {
-                        show: true,
+                        show: 1,
                         backgroundColor: 'rgba(0, 0, 0, .8)'
                     },
 
@@ -262,7 +370,7 @@
                     },
                     color: ["#0d94bc","#f36e12", "#135bba", "#c13018",  "#ebcb37", "#a1b968"],
                     tooltip: {
-                        show: !1,
+                        show: true,
                         trigger: "item",
                         formatter: "{a} <br/>{b}: {c} ({d}%)"
                     },
@@ -283,7 +391,7 @@
                         }
                     }],
                     series: [{
-                        name: "Sessions",
+                        name: "İstiqamət",
                         type: "pie",
                         radius: ["50%", "85%"],
                         center: ["50%", "50%"],
@@ -292,7 +400,7 @@
                         label: {
                             normal: {
                                 show: !1,
-                                position: "center",
+                                position: "right",
                                 textStyle: {
                                     fontSize: "13",
                                     fontWeight: "normal"
@@ -310,7 +418,7 @@
                         },
                         labelLine: {
                             normal: {
-                                show: !1
+                                show: 1
                             }
                         },
                         data: {!! json_encode($directionsData) !!},
@@ -339,7 +447,9 @@
                         show: true,
                         backgroundColor: 'rgba(0, 0, 0, .8)'
                     },
-
+                    dataLabels: {
+                        enabled: true
+                    },
                     series: [{
                         name: 'İstiqamət üzrə',
                         type: 'pie',
@@ -372,7 +482,10 @@
                         show: true,
                         backgroundColor: 'rgba(0, 0, 0, .8)'
                     },
-
+                    
+                    dataLabels: {
+                        enabled: true
+                    },
                     series: [{
                         type: 'pie',
                         radius: '60%',
@@ -398,18 +511,19 @@
 
             var bbar = {
                 chart: {
-                    height: 350,
+                    height: 250,
                     type: "bar",
-                    
+                    toolbar: {
+                        show: 1
+                    }
                 },
                 plotOptions: {
                     bar: {
                         horizontal: true,
-                        endingShape: "rounded",
                     }
                 },
                 dataLabels: {
-                    enabled: false
+                    enabled: true
                 },
                 series: [{
                     data: {!! json_encode(array_column($programLanguagesData, 'value')) !!}
@@ -420,9 +534,35 @@
             };
 
             new ApexCharts(document.querySelector("#basicBar-chart"), bbar).render();
-
-
             
+            emfs = {
+                chart: {
+                    height: 350,
+                    type: "line",
+                    shadow: {enabled: !0, color: "#000", top: 18, left: 7, blur: 10, opacity: 1},
+                    toolbar: {show: true},
+                    animations: {
+                        enabled: !0,
+                        easing: "linear",
+                        speed: 500,
+                        animateGradually: {enabled: !0, delay: 150},
+                        dynamicAnimation: {enabled: !0, speed: 550}
+                    }
+                },
+                colors: ["#ff0000", "#77B6EA"],
+                dataLabels: {enabled: false},
+                stroke: {curve: "smooth"},
+                series: [{name: "Vurulur - ", data: emfs_out}, {
+                    name: "Qəbul edilir - ",
+                    data: emfs_in
+                }],
+                grid: {borderColor: "#e7e7e7", row: {colors: ["#f3f3f3", "transparent"], opacity: .5}},
+                markers: {size: 6},
+                xaxis: {categories: emfs_report_date},
+                yaxis: {title: {text: "EMSG səviyyəsi"}, min: 5, max: 100},
+                legend: {position: "top", horizontalAlign: "right", floating: !0, offsetY: -25, offsetX: -5}
+            };
+            new ApexCharts(document.querySelector("#basicLine-chart"), emfs).render();
         })
     </script>
 @endsection

@@ -80,6 +80,7 @@
 <script src="{{ asset('assets/js/vendor/echarts.min.js')}}"></script>
 <script src="{{ asset('assets/js/es5/echart.options.min.js')}}"></script>
 <script src="{{ asset('assets/js/es5/dashboard.v1.script.js')}}"></script>
+<script src="{{ asset('assets/js/es5/dashboard.v2.script.js')}}"></script>
 <script src="{{ asset('assets/js/script.js')}}"></script>
 <script src="{{ asset('assets/js/sidebar.large.script.js')}}"></script>
 <script src="{{ asset('assets/js/customizer.script.js')}}"></script>
