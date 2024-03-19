@@ -47,7 +47,7 @@
 
         <!-- Footer Start -->
         <div class="flex-grow-1"></div>
-        @include('layouts.partials.footer')
+        @include('admin.layouts.partials.footer')
         <!-- fotter end -->
     </div>
     <!-- ============ Body content End ============= -->

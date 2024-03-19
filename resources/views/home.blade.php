@@ -62,10 +62,17 @@
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center">
                                 <h4 class="mb-2 text-muted">Vurulur</h4>
-                                <p class="mb-1 text-22 font-weight-light">{{ $response_quality_counts['Vurulur'] }}</p>
+                                <p class="mb-1 text-22 font-weight-light">{{ isset($response_quality_counts['Vurulur']) ? $response_quality_counts['Vurulur'] : '0' }}</p>
                             </div>
                             @php 
-                                $vurulur_percent = $response_quality_counts['Vurulur'] * 100 / Auth::user()->stations->foreign_broadcasts->count() ;
+                                if(isset($response_quality_counts['Vurulur']) && $response_quality_counts['Vurulur'] !=0 )
+                                {
+                                    $vurulur_percent = $response_quality_counts['Vurulur'] * 100 / $station_max_foreign_broadcasts_count;
+                                }
+                                else
+                                {
+                                    $vurulur_percent = 0;
+                                }
                             @endphp
                             <div class="progress mb-1" style="height: 30px">
                                 <div class="progress-bar bg-default" style="width: {{ round($vurulur_percent, 0,2) }}%; font-size:16px;" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
@@ -85,14 +92,21 @@
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center">
                                 <h4 class="mb-2 text-muted">Yaxşı</h4>
-                                <p class="mb-1 text-22 font-weight-light">{{ $response_quality_counts['Yaxşı'] }}</p>
+                                <p class="mb-1 text-22 font-weight-light">{{ isset($response_quality_counts['Yaxşı']) ? $response_quality_counts['Yaxşı'] : '0' }}</p>
                             </div>
                             @php 
-                                $yaxsi_persent = $response_quality_counts['Yaxşı'] * 100 / Auth::user()->stations->foreign_broadcasts->count() ;
+                                if(isset($response_quality_counts['Yaxşı']) && $response_quality_counts['Yaxşı'] !=0 )
+                                {
+                                    $yaxsi_percent = $response_quality_counts['Yaxşı'] * 100 / $station_max_foreign_broadcasts_count;
+                                }
+                                else
+                                {
+                                    $yaxsi_percent = 0;
+                                }
                             @endphp
                             <div class="progress mb-1" style="height: 30px">
-                                <div class="progress-bar bg-success" style="width: {{ round($yaxsi_persent, 0,2) }}%; font-size:16px;" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                                    {{ round($yaxsi_persent, 0,2) }}%    
+                                <div class="progress-bar bg-success" style="width: {{ round($yaxsi_percent, 0,2) }}%; font-size:16px;" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                    {{ round($yaxsi_percent, 0,2) }}%    
                                 </div>
                             </div>
                             <small class="text-muted">Məlumatlar son 1 hətfəyə nəzərən hesablanıb</small>
@@ -105,14 +119,21 @@
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center">
                                 <h4 class="mb-2 text-muted">Kafi</h4>
-                                <p class="mb-1 text-22 font-weight-light">{{ $response_quality_counts['Kafi'] }}</p>
+                                <p class="mb-1 text-22 font-weight-light">{{ isset($response_quality_counts['Kafi']) ? $response_quality_counts['Kafi'] : '0' }}</p>
                             </div>
                             @php 
-                                $kafi_persent = $response_quality_counts['Kafi'] * 100 / Auth::user()->stations->foreign_broadcasts->count() ;
+                                if(isset($response_quality_counts['Kafi']) && $response_quality_counts['Kafi'] !=0 )
+                                {
+                                    $kafi_percent = $response_quality_counts['Kafi'] * 100 / $station_max_foreign_broadcasts_count;
+                                }
+                                else
+                                {
+                                    $kafi_percent = 0;
+                                }
                             @endphp
                             <div class="progress mb-1" style="height: 30px">
-                                <div class="progress-bar bg-warning" style="width: {{ round($kafi_persent, 0,2) }}%; font-size:16px;" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                                    {{ round($kafi_persent, 0,2) }}%    
+                                <div class="progress-bar bg-warning" style="width: {{ round($kafi_percent, 0,2) }}%; font-size:16px;" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                    {{ round($kafi_percent, 0,2) }}%    
                                 </div>
                             </div>
                             <small class="text-muted">Məlumatlar son 1 hətfəyə nəzərən hesablanıb</small>
@@ -125,14 +146,21 @@
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center">
                                 <h4 class="mb-2 text-muted">Zəif</h4>
-                                <p class="mb-1 text-22 font-weight-light">{{ $response_quality_counts['Zəif'] }}</p>
+                                <p class="mb-1 text-22 font-weight-light">{{ isset($response_quality_counts['Zəif']) ? $response_quality_counts['Zəif'] : '0' }}</p>
                             </div>
                             @php 
-                                $zeif_persent = $response_quality_counts['Zəif'] * 100 / Auth::user()->stations->foreign_broadcasts->count();
+                                if(isset($response_quality_counts['Zəif']) && $response_quality_counts['Zəif'] !=0 )
+                                {
+                                    $zeif_percent = $response_quality_counts['Zəif'] * 100 / $station_max_foreign_broadcasts_count;
+                                }
+                                else
+                                {
+                                    $zeif_percent = 0;
+                                }
                             @endphp
                             <div class="progress mb-1" style="height: 30px">
-                                <div class="progress-bar bg-danger" style="width: {{ round($zeif_persent, 0,2) }}%; font-size:16px;" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                                    {{ round($zeif_persent, 0,2) }}%    
+                                <div class="progress-bar bg-danger" style="width: {{ round($zeif_percent, 0,2) }}%; font-size:16px;" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                    {{ round($zeif_percent, 0,2) }}%    
                                 </div>
                             </div>
                             <small class="text-muted">Məlumatlar son 1 hətfəyə nəzərən hesablanıb</small>
@@ -274,7 +302,7 @@
                             formatter: '{value}'
                         },
                         min: 0,
-                        max: {{ Auth::user()->stations->foreign_broadcasts->count() }},
+                        max: {{ $station_max_foreign_broadcasts_count}},
                         interval: 1,
                         axisLine: {
                             show: false
