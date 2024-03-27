@@ -89,26 +89,26 @@ class LocalBroadcastController extends Controller
             'r_read' => 0,
         ]);
 
-        (new LogsController())->create_logs(Auth::user()->name_surname. ' ' . Auth::user()->stations->station_name .' üçün yerli ölçmələrin hesabatını sistemə daxil etdi.');
+        (new LogsController())->create_logs(Auth::user()->name_surname . ' ' . Auth::user()->stations->station_name . ' üçün yerli ölçmələrin hesabatını sistemə daxil etdi.');
 
         $user = User::where('stations_id', $stations_id)
             ->where('position', 'Müdir')
             ->first();
 
-        $user_name_surname = $user->name_surname;
-        $user_email = 'chaparoglucavid@gmail.com';
+        // $user_name_surname = $user->name_surname;
+        // $user_email = 'chaparoglucavid@gmail.com';
 
-        $reportData = [
-            'title'             => 'Yerli ölçmələrin hesabatı',
-            'content'           => Auth::user()->stations->station_name . ' üçün ' .  Carbon::now()->format('d.m.Y') . ' tarixinə olan hesabatı sistemə daxil edilib.',
-            'localReport'       => $local,
-            'user_name_surname' => $user_name_surname
-        ];
+        // $reportData = [
+        //     'title'             => 'Yerli ölçmələrin hesabatı',
+        //     'content'           => Auth::user()->stations->station_name . ' üçün ' .  Carbon::now()->format('d.m.Y') . ' tarixinə olan hesabatı sistemə daxil edilib.',
+        //     'localReport'       => $local,
+        //     'user_name_surname' => $user_name_surname
+        // ];
 
 
-        Mail::send('emails.localStore', ['reportData' => $reportData], function ($message) use ($user_email) {
-            $message->to($user_email)->subject('Yerli ölçmələrin hesabatı');
-        });
+        // Mail::send('emails.localStore', ['reportData' => $reportData], function ($message) use ($user_email) {
+        //     $message->to($user_email)->subject('Yerli ölçmələrin hesabatı');
+        // });
 
         return response()->json([
             'title' => 'Məlumatlar sistemə daxil edildi.',
@@ -182,7 +182,7 @@ class LocalBroadcastController extends Controller
             'r_read' => 0,
         ]);
 
-        (new LogsController())->create_logs(Auth::user()->name_surname. ' ' . Auth::user()->stations->station_name .' üçün verilən '. $localBroadcast->report_number .' nömrəli ölçmələrin hesabatında düzəliş etdi.');
+        (new LogsController())->create_logs(Auth::user()->name_surname . ' ' . Auth::user()->stations->station_name . ' üçün verilən ' . $localBroadcast->report_number . ' nömrəli ölçmələrin hesabatında düzəliş etdi.');
 
         return response()->json([
             'message' => 'Məlumatlar yenilənib təsdiq üçün göndərildi.',

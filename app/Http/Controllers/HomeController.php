@@ -10,6 +10,7 @@ use App\Models\ProgramLocations;
 use App\Models\Stations;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -36,111 +37,94 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $now = Carbon::now();
-        $oneWeeksBefore = $now->copy()->subWeek();
-        $daysInRange = Carbon::parse($oneWeeksBefore)->daysUntil($now);
+        $start_date = isset ($_GET['start_date']) ? Carbon::parse($_GET['start_date']) : Carbon::now();
+        $end_date = isset ($_GET['end_date']) ? Carbon::parse($_GET['end_date']) : $start_date->copy()->addWeek();
+        $broadcast = isset ($_GET['broadcast']) ? $_GET['broadcast'] : 'all';
+
+
+
+        $longitude = Auth::user()->stations->longitude;
+        $latitude = Auth::user()->stations->latitude;
+        $response = \Http::get("https://api.openweathermap.org/data/3.0/onecall?lat={$latitude}&lon={$longitude}&appid=154437409d239b216df2e29524abd834");
+
+        if ($response->successful()) {
+            $weatherData = $response->json();
+            $weatherData = collect($weatherData['daily'])->take(7);
+        }
+
+        $daysInRange = Carbon::parse($start_date)->daysUntil($end_date);
 
         $days_array = [];
         foreach ($daysInRange as $key => $value) {
             $days_array[] = $value->toDateString();
         }
 
-
         $station = Auth::user()->stations;
 
         //yerli və kənar yayım hesabatlar - tezlikləri ilə birlikdə
-        $local_measurements = [];
-        $foreign_measurements = [];
+        $measurements = [];
 
-        //yerli ve kenar olcmeler tv ve fm sayi ile birlikde secilen gun araliginda
+        // table adini teyin edirik 
+        if ($broadcast == 'all') {
+            $broadcasts = ['local_broadcasts', 'foreign_broadcasts'];
+        } else {
+            $broadcasts = [$broadcast];
+        }
+
+        // Secilen gun araliginda
         foreach ($daysInRange as $key => $value) {
-            $local_measurements[] = [
+            $measurements[] = [
                 'date' => $value->toDateString(),
-                'TV' => DB::table('local_broadcasts')->where('stations_id', $station->id)
-                            ->join('frequencies', 'local_broadcasts.frequencies_id', '=', 'frequencies.id')
-                            ->where('frequencies.value', '<', 61)
-                            ->where('local_broadcasts.stations_id', $station->id)
-                            ->where('local_broadcasts.report_date', $value->toDateString())
-                            ->count() ?? 0,
-                'FM' => DB::table('local_broadcasts')->where('stations_id', $station->id)
-                            ->join('frequencies', 'local_broadcasts.frequencies_id', '=', 'frequencies.id')
-                            ->where('frequencies.value', '>', 60)
-                            ->where('local_broadcasts.stations_id', $station->id)
-                            ->where('local_broadcasts.report_date', $value->toDateString())
-                            ->count() ?? 0
+                'TV' => 0,
+                'FM' => 0
             ];
-        
-            $foreign_measurements[] = [
-                'date' => $value->toDateString(),
-                'TV' => DB::table('foreign_broadcasts')->where('stations_id', $station->id)
-                            ->join('frequencies', 'foreign_broadcasts.frequencies_id', '=', 'frequencies.id')
-                            ->where('frequencies.value', '<', 61)
-                            ->where('foreign_broadcasts.stations_id', $station->id)
-                            ->where('foreign_broadcasts.report_date', $value->toDateString())
-                            ->count() ?? 0,
-                'FM' => DB::table('foreign_broadcasts')->where('stations_id', $station->id)
-                            ->join('frequencies', 'foreign_broadcasts.frequencies_id', '=', 'frequencies.id')
-                            ->where('frequencies.value', '>', 60)
-                            ->where('foreign_broadcasts.stations_id', $station->id)
-                            ->where('foreign_broadcasts.report_date', $value->toDateString())
-                            ->count() ?? 0
-            ];
+
+            foreach ($broadcasts as $b) {
+                $measurements[$key]['TV'] += DB::table($b)
+                    ->join('frequencies', $b . '.frequencies_id', '=', 'frequencies.id')
+                    ->where('frequencies.value', '<', 61)
+                    ->where('stations_id', $station->id)
+                    ->where($b . '.report_date', $value->toDateString())
+                    ->count();
+
+                $measurements[$key]['FM'] += DB::table($b)
+                    ->join('frequencies', $b . '.frequencies_id', '=', 'frequencies.id')
+                    ->where('frequencies.value', '>', 60)
+                    ->where('stations_id', $station->id)
+                    ->where($b . '.report_date', $value->toDateString())
+                    ->count();
+            }
+        }
+
+        $total_fm_count = 0;
+        $total_tv_count = 0;
+
+        foreach ($broadcasts as $b) {
+            $total_tv_count += DB::table($b)
+                ->join('frequencies', $b . '.frequencies_id', '=', 'frequencies.id')
+                ->where('frequencies.value', '<', 61)
+                ->where($b . '.stations_id', $station->id)
+                ->whereBetween($b . '.created_at', [$start_date, $end_date])
+                ->count() ?? 0;
+
+            $total_fm_count += DB::table($b)
+                ->join('frequencies', $b . '.frequencies_id', '=', 'frequencies.id')
+                ->where('frequencies.value', '>', 60)
+                ->where($b . '.stations_id', $station->id)
+                ->whereBetween($b . '.created_at', [$start_date, $end_date])
+                ->count() ?? 0;
         }
 
 
-        //yerli olcmelerde umumi tv sayi
-        $local_total_tv_count = DB::table('local_broadcasts')
-            ->where('stations_id', $station->id)
-            ->join('frequencies', 'local_broadcasts.frequencies_id', '=', 'frequencies.id')
-            ->where('frequencies.value', '<', 61)
-            ->where('local_broadcasts.stations_id', $station->id)
-            ->whereBetween('local_broadcasts.created_at', [$oneWeeksBefore, $now])
-            ->count() ?? 0;
-
-        $local_total_fm_count = DB::table('local_broadcasts')
-            ->where('stations_id', $station->id)
-            ->join('frequencies', 'local_broadcasts.frequencies_id', '=', 'frequencies.id')
-            ->where('frequencies.value', '>', 60)
-            ->where('local_broadcasts.stations_id', $station->id)
-            ->whereBetween('local_broadcasts.created_at', [$oneWeeksBefore, $now])
-            ->count() ?? 0;
-
-        $foreign_total_tv_count = DB::table('foreign_broadcasts')
-            ->where('stations_id', $station->id)
-            ->join('frequencies', 'foreign_broadcasts.frequencies_id', '=', 'frequencies.id')
-            ->where('frequencies.value', '<', 61)
-            ->where('foreign_broadcasts.stations_id', $station->id)
-            ->whereBetween('foreign_broadcasts.created_at', [$oneWeeksBefore, $now])
-            ->count() ?? 0;
-
-        $foreign_total_fm_count = DB::table('foreign_broadcasts')
-            ->where('stations_id', $station->id)
-            ->join('frequencies', 'foreign_broadcasts.frequencies_id', '=', 'frequencies.id')
-            ->where('frequencies.value', '>', 60)
-            ->where('foreign_broadcasts.stations_id', $station->id)
-            ->whereBetween('foreign_broadcasts.created_at', [$oneWeeksBefore, $now])
-            ->count() ?? 0;
-
 
         //umumi syalarin her birini chartda istifade ucun arrayda toplayiriq 
-        $totalFrequencyDataLocal = [
+        $totalFrequencyData = [
             [
-                'value' => $local_total_fm_count,
+                'value' => $total_fm_count,
                 'name' => 'FM'
             ],
             [
-                'value' => $local_total_tv_count,
-                'name' => 'TV'
-            ]
-        ];
-
-        $totalFrequencyDataForeign = [
-            [
-                'value' => $foreign_total_fm_count,
-                'name' => 'FM'
-            ],
-            [
-                'value' => $foreign_total_tv_count,
+                'value' => $total_tv_count,
                 'name' => 'TV'
             ]
         ];
@@ -154,39 +138,72 @@ class HomeController extends Controller
 
 
         //kənar hesabatların istiqamətləri sayı
-        $foreign_direction_counts = DB::table('foreign_broadcasts')->where('stations_id', $station->id)->join('directions', 'foreign_broadcasts.directions_id', '=', 'directions.id')
-            ->select('directions.name as name', \DB::raw('count(*) as value'))
-            ->groupBy('directions_id', 'directions.name')
-            ->get()
-            ->toArray() ?? [];
+        $directions_count = [];
+
+        foreach ($broadcasts as $key => $b) {
+            $directions = DB::table($b)
+                ->where('stations_id', $station->id)
+                ->join('directions', $b . '.directions_id', '=', 'directions.id')
+                ->select('directions.name as name', DB::raw('count(*) as value'))
+                ->groupBy('directions_id', 'directions.name')
+                ->get()
+                ->toArray() ?? [];
+
+            foreach ($directions as $direction) {
+                if (!isset ($directions_count[$direction->name])) {
+                    $directions_count[$direction->name] = 0;
+                }
+                $directions_count[$direction->name] += $direction->value;
+            }
+        }
 
         $directionsData = [];
-        foreach ($foreign_direction_counts as $item) {
+
+        foreach ($directions_count as $name => $value) {
             $directionsData[] = [
-                'value' => $item->value,
-                'name' => $item->name
+                'value' => $value,
+                'name' => $name
             ];
         }
+
 
         //kənar hesabatlarda proqramın yayımlandığı yerlərin sayı
-        $foreign_locations_counts =  DB::table('foreign_broadcasts')->where('stations_id', $station->id)->join('program_locations', 'foreign_broadcasts.program_locations_id', '=', 'program_locations.id')
-            ->select('program_locations_id', 'program_locations.name', \DB::raw('count(*) as count'))
-            ->groupBy('program_locations_id', 'program_locations.name')
-            ->get()
-            ->toArray() ?? [];
+        $locations_count = [];
+
+        foreach ($broadcasts as $key => $b) {
+            $program_locations = DB::table($b)
+                ->where('stations_id', $station->id)
+                ->join('program_locations', $b . '.program_locations_id', '=', 'program_locations.id')
+                ->select('program_locations.name as name', DB::raw('count(*) as value'))
+                ->groupBy('program_locations_id', 'program_locations.name')
+                ->get()
+                ->toArray() ?? [];
+
+            foreach ($program_locations as $location) {
+                if (!isset ($locations_count[$location->name])) {
+                    $locations_count[$location->name] = 0;
+                }
+                $locations_count[$location->name] += $location->value;
+            }
+        }
 
         $programLocationsData = [];
-        foreach ($foreign_locations_counts as $item) {
+
+        foreach ($locations_count as $name => $value) {
             $programLocationsData[] = [
-                'value' => $item->count,
-                'name' => $item->name
+                'value' => $value,
+                'name' => $name
             ];
         }
 
+
+        dd($programLocationsData);
+
+
         $foreign_languages_counts = DB::table('foreign_broadcasts')->where('stations_id', $station->id)->join('program_languages', 'foreign_broadcasts.program_languages_id', '=', 'program_languages.id')
-            ->select('program_languages_id', 'program_languages.name', \DB::raw('count(*) as count'))
+            ->select('program_languages_id', 'program_languages.name', DB::raw('count(*) as count'))
             ->groupBy('program_languages_id', 'program_languages.name')
-            ->distinct('program_languages_id') // Use distinct method for program_languages_id
+            ->distinct('program_languages_id')
             ->get()
             ->toArray() ?? [];
 
@@ -198,8 +215,8 @@ class HomeController extends Controller
             ];
         }
 
-       
-            
+
+
         $emfs = [];
         foreach (DB::table('foreign_broadcasts')->where('stations_id', $station->id)->where('frequencies_id', 7)->get() as $key => $value) {
             $emfs[$key]['in'] = $value->emfs_level_in;
@@ -207,7 +224,7 @@ class HomeController extends Controller
             $emfs[$key]['report_date'] = $value->report_date;
         }
 
-        
+
 
 
         //kənar hesabatlarda qəbul keyfiyyətinə görə qruplaşdırma və say
@@ -218,8 +235,7 @@ class HomeController extends Controller
             ->pluck('count', 'response_quality')
             ->toArray();
 
-        // Eğer veritabanında veri yoksa varsayılan değerleri kullanıyoruz
-        if (empty($response_quality_counts)) {
+        if (empty ($response_quality_counts)) {
             $response_quality_counts = [
                 'Vurulur' => 0,
                 'Yaxşı' => 0,
@@ -232,7 +248,7 @@ class HomeController extends Controller
             ->where('response_quality', 'Vurulur')
             ->where('cons_or_peri', 'Periodik')
             ->count() ?? 0;
-    
+
         $daimi_say = DB::table('foreign_broadcasts')->where('stations_id', $station->id)
             ->where('response_quality', 'Vurulur')
             ->where('cons_or_peri', 'Daimi')
@@ -241,25 +257,22 @@ class HomeController extends Controller
         return view(
             'home',
             compact(
-                'days_array',
-                'local_measurements',
-                'foreign_measurements',
-                'totalFrequencyDataLocal',
-                'totalFrequencyDataForeign',
+                'measurements',
+                'totalFrequencyData',
+                'station_max_frequency_count',
+                'station_max_foreign_broadcasts_count',
+                'station_max_local_broadcasts_count',
                 'directionsData',
                 'programLocationsData',
                 'programLanguagesData',
-                'foreign_locations_counts',
-                'foreign_languages_counts',
-                'response_quality_counts',
-                'station_max_frequency_count',
                 'emfs',
+                'response_quality_counts',
                 'periodik_say',
                 'daimi_say',
-                'station_max_foreign_broadcasts_count',
-                'station_max_local_broadcasts_count',
+                'weatherData'
             )
         );
+
     }
 
 

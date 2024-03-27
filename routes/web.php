@@ -36,7 +36,6 @@ Route::middleware(['auth', 'is_admin:user'])->group(function () {
     Route::put('update-station-profile/{id}', [\App\Http\Controllers\HomeController::class, 'update_station_profile'])->name('update-station-profile');
     Route::resource('/local-broadcasts', \App\Http\Controllers\LocalBroadcastController::class);
     Route::resource('/foreign-broadcasts', \App\Http\Controllers\ForeignBroadcastController::class);
-
     Route::post('get-data-by-frequency', [\App\Http\Controllers\HomeController::class, 'get_data_by_frequency'])->name('get-data-by-frequency');
 });
 
