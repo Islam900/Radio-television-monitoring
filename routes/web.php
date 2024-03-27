@@ -37,6 +37,7 @@ Route::middleware(['auth', 'is_admin:user'])->group(function () {
     Route::resource('/local-broadcasts', \App\Http\Controllers\LocalBroadcastController::class);
     Route::resource('/foreign-broadcasts', \App\Http\Controllers\ForeignBroadcastController::class);
     Route::post('get-data-by-frequency', [\App\Http\Controllers\HomeController::class, 'get_data_by_frequency'])->name('get-data-by-frequency');
+    Route::post('export-to-pdf', [\App\Http\Controllers\HomeController::class, 'export_to_pdf'])->name('export_to_pdf');
 });
 
 

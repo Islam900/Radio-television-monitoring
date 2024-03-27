@@ -41,20 +41,36 @@
                     <div class="card-body">
                         <div class="row row-xs">
                             <div class="col-md-3">
-                                <input type="date" class="form-control" name="start_date">
+                                <input type="date" value="{{ isset($_GET['start_date']) ? $_GET['start_date'] : \Carbon\Carbon::now()->format('Y-m-d') }}" class="form-control" name="start_date">
                             </div>
                             <div class="col-md-3 mt-3 mt-md-0">
-                                <input type="date" class="form-control" name="end_date">
+                                <input type="date" value="{{ isset($_GET['end_date']) ? $_GET['end_date'] : \Carbon\Carbon::now()->format('Y-m-d') }}" class="form-control" name="end_date">
                             </div>
                             <div class="col-md-4 mt-3 mt-md-0">
                                 <select name="broadcast" class="form-control" id="">
-                                    <option value="local_broadcasts">Yerli</option>
-                                    <option value="foreign_broadcasts">Kənar</option>
-                                    <option value="all">Hamısı</option>
+                                    <option value="local_broadcasts" {{ isset($_GET['broadcast']) && $_GET['broadcast']=='local_broadcasts' ? 'selected' : '' }}>Yerli</option>
+                                    <option value="foreign_broadcasts" {{ isset($_GET['broadcast']) && $_GET['broadcast']=='foreign_broadcasts' ? 'selected' : '' }}>Kənar</option>
+                                    <option value="all" {{ isset($_GET['broadcast']) && $_GET['broadcast']=='all' ? 'selected' : '' }}>Hamısı</option>
                                 </select>
                             </div>
-                            <div class="col-md-2 mt-3 mt-md-0">
+                            <div class="col-md-1 mt-3 mt-md-0">
                                 <button class="btn btn-primary btn-block calculate" style="height: 48px;">Hesablayın</button>
+                            </div>
+                            <div class="col-md-1 mt-3 mt-md-0">
+                                <div class="col">
+                                    <div class="btn-group dropright">
+                                        <button type="button" class="btn btn-outline-danger " style="height: 48px;">
+                                            Çap edin
+                                        </button>
+                                        <button type="button" class="btn btn-outline-danger dropdown-toggle dropdown-toggle-split _r_drop_right" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <span class="sr-only">Toggle Dropdown</span>
+                                        </button>
+                                        <div class="dropdown-menu" x-placement="right-start" >
+                                            <a class="dropdown-item" href="#" onclick="exportToPDF()">PDF</a>
+                                            <a class="dropdown-item" href="#" >EXCEL</a>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -64,6 +80,7 @@
     </div>
 
     <div class="row">
+
         <div class="col-md-3 statistics">
             <div class="card mb-4">
                 <div class="card-body">
@@ -93,7 +110,7 @@
             </div>
         </div>
     
-        <div class="col-md-3 statistics">
+        <div class=" col-md-3 statistics">
             <div class="card mb-4">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
@@ -120,7 +137,7 @@
             </div>
         </div>
     
-        <div class="col-md-3 statistics">
+        <div class=" col-md-3 statistics">
             <div class="card mb-4">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
@@ -147,7 +164,7 @@
             </div>
         </div>
     
-        <div class="col-md-3 statistics">
+        <div class=" col-md-3 statistics">
             <div class="card mb-4">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
@@ -596,6 +613,28 @@
         };
         new ApexCharts(document.querySelector("#basicLine-chart"), emfs).render();
 
-    })
+    });
+
+
+    function exportToPDF() {
+        var startDate = $('[name="start_date"]').val();
+        var endDate = $('[name="end_date"]').val();
+        var broadcast = $('[name="broadcast"]').val();
+
+        $.ajax({
+            url:"{{ url('export-to-pdf') }}",
+            type:"POST",
+            data:{
+                "start_date":startDate,
+                "end_date":endDate,
+                "broadcast":broadcast,
+                "_token": "{{ csrf_token() }}"
+            },
+            success:function(response){
+                console.log(response);
+                alert("Merhaba");
+            }
+        })
+    }
 </script>
 @endsection
